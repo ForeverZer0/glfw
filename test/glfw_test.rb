@@ -1,8 +1,8 @@
 require "test_helper"
 
-class GlfwTest < Minitest::Test
+class GLFWTest < Minitest::Test
   def test_that_it_has_a_version_number
-    refute_nil ::Glfw::VERSION
+    refute_nil ::GLFW::VERSION
   end
 
   def test_it_does_something_useful

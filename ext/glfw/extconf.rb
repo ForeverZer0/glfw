@@ -5,7 +5,7 @@ INCLUDEDIR = RbConfig::CONFIG['includedir']
 
 HEADER_DIRS = [INCLUDEDIR, File.dirname(__FILE__)]
 
-
+# TODO: x86 or x86-64 (ming)
 
 # setup constant that is equal to that of the file path that holds that static libraries that will need to be compiled against
 LIB_DIRS = [LIBDIR, File.expand_path(File.join(File.dirname(__FILE__), "lib"))]

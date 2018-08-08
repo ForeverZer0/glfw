@@ -22,7 +22,8 @@ VALUE rb_glfw_monitor_dimensions(VALUE self);
 VALUE rb_glfw_monitor_get_gamma_ramp(VALUE self);
 VALUE rb_glfw_monitor_set_gamma_ramp(int argc, VALUE *argv, VALUE self);
 VALUE rb_glfw_monitor_gamma(VALUE self, VALUE exponent);
-
+VALUE rb_glfw_monitor_video_mode(VALUE self);
+VALUE rb_glfw_monitor_video_modes(VALUE self);
 VALUE rb_glfw_monitor_primary(VALUE klass);
 
 #endif /* GLFW_RB_MONITOR_H */

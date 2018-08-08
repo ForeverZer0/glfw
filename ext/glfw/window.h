@@ -4,9 +4,6 @@
 
 #include "common.h"
 
-#define WIN2VALUE(window) ((VALUE) glfwGetWindowUserPointer(window))
-
-
 void Init_glfw_window(VALUE mmodule);
 
 static VALUE rb_glfw_window_alloc(VALUE klass);
@@ -47,11 +44,30 @@ VALUE rb_glfw_window_decorated_p(VALUE self);
 VALUE rb_glfw_window_floating_p(VALUE self);
 VALUE rb_glfw_window_aspect_ratio(VALUE self, VALUE numerator, VALUE denominator);
 VALUE rb_glfw_window_limits(VALUE self, VALUE minWidth, VALUE minHeight, VALUE maxWidth, VALUE maxHeight);
+VALUE  rb_glfw_window_frame_size(VALUE self);
+
 
 /////////////////////////////////////////////////////////////////////////////
 // Callbacks
 /////////////////////////////////////////////////////////////////////////////
 
+VALUE rb_glfw_window_enable_callback(VALUE self, VALUE sym, VALUE enable);
+VALUE rb_glfw_window_empty_method(int argc, VALUE *argv, VALUE self);
 
+static void rb_glfw_window_closing(GLFWwindow *window);
+static void rb_glfw_window_moved(GLFWwindow *window, int x, int y);
+static void rb_glfw_window_resized(GLFWwindow *window, int width, int height);
+static void rb_glfw_window_refreshed(GLFWwindow *window);
+static void rb_glfw_window_focus_changed(GLFWwindow *window, int focus);
+static void rb_glfw_window_minimize_changed(GLFWwindow *window, int minimized);
+static void rb_glfw_window_frame_buffer_resized(GLFWwindow *window, int width, int height);
+static void rb_glfw_window_cursor_mouse_move(GLFWwindow *window, double x, double y);
+static void rb_glfw_window_cursor_mouse_button(GLFWwindow *window, int button, int action, int mods);
+static void rb_glfw_window_cursor_mouse_scroll(GLFWwindow *window, double xoffset, double yoffset);
+static void rb_glfw_window_key(GLFWwindow *window, int key, int scancode, int action, int mods);
+static void rb_glfw_window_char(GLFWwindow *window, unsigned int codepoint);
+static void rb_glfw_window_char_mods(GLFWwindow *window, unsigned int codepoint, int mods);
+static void rb_glfw_window_file_drop(GLFWwindow *window, int count, const char** files);
+static void rb_glfw_window_mouse_enter(GLFWwindow *window, int entered);
 
 #endif /* GLFW_RB_WINDOW_H */

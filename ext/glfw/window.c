@@ -3,6 +3,26 @@
 
 VALUE rb_cGLFWwindow;
 
+ID id_moved;
+ID id_resized;
+ID id_framebuffer_resized;
+ID id_closing;
+ID id_refreshed;
+ID id_focus_changed;
+ID id_minimize_changed;
+ID id_mouse_move;
+ID id_mouse_scroll;
+ID id_mouse_button;
+ID id_mouse_enter;
+ID id_key;
+ID id_char;
+ID id_char_mods;
+ID id_file_drop;
+
+#define RB_CALLBACK(id, name) \
+    id = rb_intern(name);     \
+    rb_define_method_id(rb_cGLFWwindow, id, rb_glfw_window_empty_method, -1)
+
 void Init_glfw_window(VALUE mmodule) {
     rb_cGLFWwindow = rb_define_class_under(rb_mGLFW, "Window", rb_cObject);
 
@@ -45,25 +65,41 @@ void Init_glfw_window(VALUE mmodule) {
     rb_define_method(rb_cGLFWwindow, "decorated?", rb_glfw_window_decorated_p, 0);
     rb_define_method(rb_cGLFWwindow, "topmost?", rb_glfw_window_floating_p, 0);
 
+    rb_define_method(rb_cGLFWwindow, "enable_callback", rb_glfw_window_enable_callback, 2);
+
     rb_define_method(rb_cGLFWwindow, "aspect_ratio", rb_glfw_window_aspect_ratio, 2);
     rb_define_method(rb_cGLFWwindow, "size_limits", rb_glfw_window_limits, 4);
+    rb_define_method(rb_cGLFWwindow, "frame_size", rb_glfw_window_frame_size, 0);
 
-    // Window Alias
+    // Callbacks
+    RB_CALLBACK(id_moved, "moved");
+    RB_CALLBACK(id_refreshed, "resized");
+    RB_CALLBACK(id_framebuffer_resized, "framebuffer_resized");
+    RB_CALLBACK(id_closing, "closing");
+    RB_CALLBACK(id_refreshed, "refreshed");
+    RB_CALLBACK(id_focus_changed, "focus_changed");
+    RB_CALLBACK(id_minimize_changed, "minimize_changed");
+    RB_CALLBACK(id_mouse_move, "mouse_move");
+    RB_CALLBACK(id_mouse_scroll, "mouse_scroll");
+    RB_CALLBACK(id_mouse_button, "mouse_button");
+    RB_CALLBACK(id_mouse_enter, "mouse_enter");
+    RB_CALLBACK(id_key, "key");
+    RB_CALLBACK(id_char, "char");
+    RB_CALLBACK(id_char_mods, "char_mods");
+    RB_CALLBACK(id_file_drop, "file_drop");
+
+    // Alias
     rb_define_alias(rb_cGLFWwindow, "dispose", "destroy");
     rb_define_alias(rb_cGLFWwindow, "iconify", "minimize");
     rb_define_alias(rb_cGLFWwindow, "floating?", "topmost?");
     rb_define_alias(rb_cGLFWwindow, "iconified?", "minimized?");
-
-
-
-// glfwGetWindowUserPointer		
-// glfwSetWindowUserPointer
+    rb_define_alias(rb_cGLFWwindow, "iconify_changed", "minimize_changed");
 }
 
 static VALUE rb_glfw_window_alloc(VALUE klass) {
     GLFWwindow *w = ruby_xmalloc(SIZEOF_INTPTR_T);
     memset(w, 0, SIZEOF_INTPTR_T);
-    return WRAP_WINDOW(w);
+    return Data_Wrap_Struct(klass, NULL, RUBY_DEFAULT_FREE, w);
 }
 
 // initialize(width, height, title = '', **options)
@@ -76,15 +112,15 @@ VALUE rb_glfw_window_initialize(int argc, VALUE *argv, VALUE self) {
     rb_scan_args(argc, argv, "21:", &width, &height, &title, &options);
     const char *str = NIL_P(title) ? "" : StringValueCStr(title);
 
-    // Option Processing  // TODO: Options
-    if (!NIL_P(options))
-    {
+    if (!NIL_P(options)) {
         // Monitor
-        monitor = RTEST(rb_hash_aref(options, STR2SYM("fullscreen"))) ?
-            glfwGetPrimaryMonitor() :
-            rb_hash_aref(options, STR2SYM("monitor"));
-        if (!NIL_P(monitor))
-            Data_Get_Struct(monitor, GLFWmonitor, mon);
+        if (RTEST(rb_hash_aref(options, STR2SYM("fullscreen")))) {
+            mon = glfwGetPrimaryMonitor();
+        } else {
+            monitor = rb_hash_aref(options, STR2SYM("monitor"));
+            if (!NIL_P(monitor))
+                Data_Get_Struct(monitor, GLFWmonitor, mon);
+        }
 
         // Share
         share = rb_hash_aref(options, STR2SYM("share"));
@@ -94,6 +130,9 @@ VALUE rb_glfw_window_initialize(int argc, VALUE *argv, VALUE self) {
 
     window = glfwCreateWindow(NUM2INT(width), NUM2INT(height), str, mon, other);
     RDATA(self)->data = window;
+
+    // Store the Ruby VALUE as a "user pointer" to get the Ruby instance from the C struct
+    glfwSetWindowUserPointer(window, (void *)self);
 
     return Qnil;
 }
@@ -264,8 +303,7 @@ VALUE rb_glfw_window_closing_p(VALUE self) {
 
 VALUE rb_glfw_window_close(int argc, VALUE *argv, VALUE self) {
     WINDOW();
-    switch (argc)
-    {
+    switch (argc) {
         case 0:
             glfwSetWindowShouldClose(w, 1);
             break;
@@ -287,16 +325,15 @@ VALUE rb_glfw_window_get_monitor(VALUE self) {
 
 VALUE rb_glfw_window_set_monitor(int argc, VALUE *argv, VALUE self) {
     WINDOW();
-    switch (argc)
-    {
-        case 2: // monitor, refresh_rate (fullscreen)
+    switch (argc) {
+        case 2:  // monitor, refresh_rate (fullscreen)
         {
             GLFWmonitor *m = NULL;
             Data_Get_Struct(argv[0], GLFWmonitor, m);
             glfwSetWindowMonitor(w, m, 0, 0, 0, 0, NUM2INT(argv[1]));
             break;
         }
-        case 4: // x, y, width, height (windowed)
+        case 4:  // x, y, width, height (windowed)
         {
             int mx = NUM2INT(argv[0]), my = NUM2INT(argv[1]), mw = NUM2INT(argv[2]), mh = NUM2INT(argv[3]);
             glfwSetWindowMonitor(w, NULL, mx, my, mw, mh, 0);
@@ -311,7 +348,7 @@ VALUE rb_glfw_window_set_monitor(int argc, VALUE *argv, VALUE self) {
 
 VALUE rb_glfw_window_set_title(VALUE self, volatile VALUE title) {
     WINDOW();
-    const char* str = rb_string_value_cstr(&title);
+    const char *str = rb_string_value_cstr(&title);
     glfwSetWindowTitle(w, str);
     return title;
 }
@@ -363,32 +400,175 @@ VALUE rb_glfw_window_limits(VALUE self, VALUE minWidth, VALUE minHeight, VALUE m
     return Qnil;
 }
 
-
-
+VALUE rb_glfw_window_frame_size(VALUE self) {
+    WINDOW();
+    int left, top, right, bottom;
+    glfwGetWindowFrameSize(w, &left, &top, &right, &bottom);
+    VALUE ary = rb_ary_new_capa(4);
+    rb_ary_store(ary, 0, INT2NUM(left));
+    rb_ary_store(ary, 1, INT2NUM(top));
+    rb_ary_store(ary, 2, INT2NUM(right));
+    rb_ary_store(ary, 3, INT2NUM(bottom));
+    return ary;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // Callbacks
 /////////////////////////////////////////////////////////////////////////////
 
+VALUE rb_glfw_window_empty_method(int argc, VALUE *argv, VALUE self) {
+    // Empty method stub, as NULL causes segfaults
+    return Qnil;
+}
 
-/*
+VALUE rb_glfw_window_enable_callback(VALUE self, VALUE cbtype, VALUE enable) {
+    WINDOW();
+    enum GLFW_RB_CALLBACK_TYPE type = NUM2INT(cbtype);
+    int state = RTEST(enable);
+    switch (type) {
+        case GLFW_RB_MOVED:
+            glfwSetWindowPosCallback(w, state ? rb_glfw_window_moved : NULL);
+            break;
+        case GLFW_RB_RESIZED:
+            glfwSetWindowSizeCallback(w, state ? rb_glfw_window_resized : NULL);
+            break;
+        case GLFW_RB_FRAMEBUFFER_RESIZED:
+            glfwSetFramebufferSizeCallback(w, state ? rb_glfw_window_frame_buffer_resized : NULL);
+            break;
+        case GLFW_RB_CLOSING:
+            glfwSetWindowCloseCallback(w, state ? rb_glfw_window_closing : NULL);
+            break;
+        case GLFW_RB_REFRESHED:
+            glfwSetWindowRefreshCallback(w, state ? rb_glfw_window_refreshed : NULL);
+            break;
+        case GLFW_RB_FOCUS_CHANGED:
+            glfwSetWindowFocusCallback(w, state ? rb_glfw_window_focus_changed : NULL);
+            break;
+        case GLFW_RB_MINIMIZE_CHANGED:
+            glfwSetWindowIconifyCallback(w, state ? rb_glfw_window_minimize_changed : NULL);
+            break;
+        case GLFW_RB_MOUSE_MOVE:
+            glfwSetCursorPosCallback(w, state ? rb_glfw_window_cursor_mouse_move : NULL);
+            break;
+        case GLFW_RB_MOUSE_SCROLL:
+            glfwSetScrollCallback(w, state ? rb_glfw_window_cursor_mouse_scroll : NULL);
+            break;
+        case GLFW_RB_MOUSE_BUTTON:
+            glfwSetMouseButtonCallback(w, state ? rb_glfw_window_cursor_mouse_button : NULL);
+            break;
+        case GLFW_RB_MOUSE_ENTER:
+            glfwSetCursorEnterCallback(w, state ? rb_glfw_window_mouse_enter : NULL);
+            break;
+        case GLFW_RB_KEY:
+            glfwSetKeyCallback(w, state ? rb_glfw_window_key : NULL);
+            break;
+        case GLFW_RB_CHAR:
+            glfwSetCharCallback(w, state ? rb_glfw_window_char : NULL);
+            break;
+        case GLFW_RB_CHAR_MODS:
+            glfwSetCharModsCallback(w, state ? rb_glfw_window_char_mods : NULL);
+            break;
+        case GLFW_RB_FILE_DROP:
+            glfwSetDropCallback(w, state ? rb_glfw_window_file_drop : NULL);
+            break;
+        default:
+            rb_raise(rb_eArgError, "invalid callback identifier - %d", type);
+            break;
+    }
 
-glfwSetWindowCloseCallback	
-glfwSetWindowFocusCallback	
-glfwSetWindowIconifyCallback	
-glfwSetWindowPosCallback	
-glfwSetWindowRefreshCallback	
-glfwSetWindowSizeCallback	
-glfwSetCharCallback	
-glfwSetCharModsCallback	
-glfwSetCursorEnterCallback		
-glfwSetCursorPosCallback	
-glfwSetDropCallback		
-glfwSetFramebufferSizeCallback	
-glfwSetJoystickCallback	
-glfwSetKeyCallback	
-glfwSetMonitorCallback	
-glfwSetMouseButtonCallback	
-glfwSetScrollCallback
+    return Qnil;
+}
 
-*/
+static void rb_glfw_window_closing(GLFWwindow *window) {
+    VALUE w = (VALUE)glfwGetWindowUserPointer(window);
+    if (RTEST(w))
+        rb_funcall(w, id_closing, 0);
+}
+
+static void rb_glfw_window_moved(GLFWwindow *window, int x, int y) {
+    VALUE w = (VALUE)glfwGetWindowUserPointer(window);
+    if (RTEST(w))
+        rb_funcall(w, id_moved, 2, INT2NUM(x), INT2NUM(y));
+}
+
+static void rb_glfw_window_resized(GLFWwindow *window, int width, int height) {
+    VALUE w = (VALUE)glfwGetWindowUserPointer(window);
+    if (RTEST(w))
+        rb_funcall(w, id_resized, 2, INT2NUM(width), INT2NUM(height));
+}
+
+static void rb_glfw_window_refreshed(GLFWwindow *window) {
+    VALUE w = (VALUE)glfwGetWindowUserPointer(window);
+    if (RTEST(w))
+        rb_funcall(w, id_refreshed, 0);
+}
+
+static void rb_glfw_window_focus_changed(GLFWwindow *window, int focused) {
+    VALUE w = (VALUE)glfwGetWindowUserPointer(window);
+    if (RTEST(w))
+        rb_funcall(w, id_focus_changed, 1, INT2BOOL(focused));
+}
+
+static void rb_glfw_window_minimize_changed(GLFWwindow *window, int minimized) {
+    VALUE w = (VALUE)glfwGetWindowUserPointer(window);
+    if (RTEST(w))
+        rb_funcall(w, id_minimize_changed, 1, INT2BOOL(minimized));
+}
+
+static void rb_glfw_window_frame_buffer_resized(GLFWwindow *window, int width, int height) {
+    VALUE w = (VALUE)glfwGetWindowUserPointer(window);
+    if (RTEST(w))
+        rb_funcall(w, id_framebuffer_resized, 2, INT2NUM(width), INT2NUM(height));
+}
+
+static void rb_glfw_window_cursor_mouse_move(GLFWwindow *window, double x, double y) {
+    VALUE w = (VALUE)glfwGetWindowUserPointer(window);
+    if (RTEST(w))
+        rb_funcall(w, id_mouse_move, 2, DBL2NUM(x), DBL2NUM(y));
+}
+
+static void rb_glfw_window_cursor_mouse_button(GLFWwindow *window, int button, int action, int mods) {
+    VALUE w = (VALUE)glfwGetWindowUserPointer(window);
+    if (RTEST(w))
+        rb_funcall(w, id_mouse_button, 3, INT2NUM(button), INT2NUM(action), INT2NUM(mods));
+}
+
+static void rb_glfw_window_cursor_mouse_scroll(GLFWwindow *window, double xoffset, double yoffset) {
+    VALUE w = (VALUE)glfwGetWindowUserPointer(window);
+    if (RTEST(w))
+        rb_funcall(w, id_mouse_scroll, 2, DBL2NUM(xoffset), DBL2NUM(yoffset));
+}
+
+static void rb_glfw_window_mouse_enter(GLFWwindow *window, int entered) {
+    VALUE w = (VALUE)glfwGetWindowUserPointer(window);
+    if (RTEST(w))
+        rb_funcall(w, id_mouse_enter, 1, INT2BOOL(entered));
+}
+ 
+static void rb_glfw_window_key(GLFWwindow *window, int key, int scancode, int action, int mods) {
+    VALUE w = (VALUE)glfwGetWindowUserPointer(window);
+    if (RTEST(w))
+        rb_funcall(w, id_key, 4, INT2NUM(key), INT2NUM(scancode), INT2NUM(action), INT2NUM(mods));  
+}
+
+static void rb_glfw_window_char(GLFWwindow *window, unsigned int codepoint) {
+    VALUE w = (VALUE)glfwGetWindowUserPointer(window);
+    if (RTEST(w))
+        rb_funcall(w, id_char, 1, UINT2NUM(codepoint)); 
+}
+
+static void rb_glfw_window_char_mods(GLFWwindow *window, unsigned int codepoint, int mods) {
+    VALUE w = (VALUE)glfwGetWindowUserPointer(window);
+    if (RTEST(w))
+        rb_funcall(w, id_char_mods, 2, UINT2NUM(codepoint), INT2NUM(mods));  
+}
+
+static void rb_glfw_window_file_drop(GLFWwindow *window, int count, const char **files) {
+    VALUE w = (VALUE)glfwGetWindowUserPointer(window);
+    if (RTEST(w)) {
+        VALUE ary = rb_ary_new_capa(count);
+        for (int i = 0; i < count; i++)
+            rb_ary_store(ary, i, rb_str_new_cstr(files[i]));
+        rb_funcall(w, id_file_drop, 1, ary);
+    }
+}

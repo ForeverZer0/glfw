@@ -15,6 +15,8 @@ void Init_glfw(void) {
     Init_glfw_window(rb_mGLFW);
     Init_glfw_monitor(rb_mGLFW);
     Init_glfw_vidmode(rb_mGLFW);
+    Init_glfw_image(rb_mGLFW);
+    Init_glfw_cursor(rb_mGLFW);
 
     // GLFW Module 
     rb_define_singleton_method(rb_mGLFW, "init", rb_glfw_init, 0);
@@ -28,9 +30,7 @@ void Init_glfw(void) {
     rb_define_singleton_method(rb_mGLFW, "time=", rb_glfw_set_time, 1);
     rb_define_singleton_method(rb_mGLFW, "monitors", rb_glfw_monitors, 0);
 
-
-
-    // GLFW Constants
+    // Version Constants
     rb_define_const(rb_mGLFW, "API_VERSION", rb_sprintf("%d.%d.%d", 
          INT2NUM(GLFW_VERSION_MAJOR),  INT2NUM(GLFW_VERSION_MINOR),  INT2NUM(GLFW_VERSION_REVISION)));
     rb_define_const(rb_mGLFW, "API_VERSION_MAJOR", INT2NUM(GLFW_VERSION_MAJOR));
@@ -38,11 +38,24 @@ void Init_glfw(void) {
     rb_define_const(rb_mGLFW, "API_VERSION_REVISION", INT2NUM(GLFW_VERSION_REVISION));
     rb_define_const(rb_mGLFW, "API_DESCRIPTION", rb_str_new_cstr(glfwGetVersionString()));
 
-    // Window Class
-
-
-
-
+    // Callback Constants
+    rb_define_const(rb_mGLFW, "CB_MOVED", INT2NUM((int) GLFW_RB_MOVED));
+    rb_define_const(rb_mGLFW, "CB_RESIZED", INT2NUM((int) GLFW_RB_RESIZED));
+    rb_define_const(rb_mGLFW, "CB_FRAMEBUFFER_RESIZED", INT2NUM((int) GLFW_RB_FRAMEBUFFER_RESIZED));
+    rb_define_const(rb_mGLFW, "CB_CLOSING", INT2NUM((int) GLFW_RB_CLOSING));
+    rb_define_const(rb_mGLFW, "CB_REFRESHED", INT2NUM((int) GLFW_RB_REFRESHED));
+    rb_define_const(rb_mGLFW, "CB_FOCUS_CHANGED", INT2NUM((int) GLFW_RB_FOCUS_CHANGED));
+    rb_define_const(rb_mGLFW, "CB_MINIMIZE_CHANGED", INT2NUM((int) GLFW_RB_MINIMIZE_CHANGED));
+    rb_define_const(rb_mGLFW, "CB_MOUSE_MOVE", INT2NUM((int) GLFW_RB_MOUSE_MOVE));
+    rb_define_const(rb_mGLFW, "CB_MOUSE_SCROLL", INT2NUM((int) GLFW_RB_MOUSE_SCROLL));
+    rb_define_const(rb_mGLFW, "CB_MOUSE_BUTTON", INT2NUM((int) GLFW_RB_MOUSE_BUTTON));
+    rb_define_const(rb_mGLFW, "CB_MOUSE_ENTER", INT2NUM((int) GLFW_RB_MOUSE_ENTER));
+    rb_define_const(rb_mGLFW, "CB_KEY", INT2NUM((int) GLFW_RB_KEY));
+    rb_define_const(rb_mGLFW, "CB_CHAR", INT2NUM((int) GLFW_RB_CHAR));
+    rb_define_const(rb_mGLFW, "CB_CHAR_MODS", INT2NUM((int) GLFW_RB_CHAR_MODS));
+    rb_define_const(rb_mGLFW, "CB_FILE_DROP", INT2NUM((int) GLFW_RB_FILE_DROP));
+    rb_define_const(rb_mGLFW, "CB_MONITOR", INT2NUM((int) GLFW_RB_MONITOR));
+    rb_define_const(rb_mGLFW, "CB_JOYSTICK", INT2NUM((int) GLFW_RB_JOYSTICK));
 }
 
 #ifndef HEADER
@@ -99,7 +112,7 @@ VALUE rb_glfw_swap_interval(VALUE klass, VALUE interval) {
 
 VALUE rb_glfw_current_context(VALUE klass) {
     GLFWwindow *w = glfwGetCurrentContext();
-    return WRAP_WINDOW(w);
+    return Data_Wrap_Struct(klass, NULL, RUBY_DEFAULT_FREE, w);
 }
 
 VALUE rb_glfw_supported_p(VALUE klass, volatile VALUE extension) {
@@ -135,14 +148,20 @@ VALUE rb_glfw_monitors(VALUE klass) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /*	\
-
-glfwGetWindowFrameSize	
-
+	
 glfwSetWindowIcon	
+glfwDefaultWindowHints
+glfwWindowHint	
+glfwCreateWindowSurface
+
+glfwGetTimerFrequency	
+glfwGetTimerValue
+
+glfwSetJoystickCallback		
+glfwSetMonitorCallback	
+	
 glfwCreateCursor	
 glfwCreateStandardCursor		
-glfwCreateWindowSurface	
-glfwDefaultWindowHints	
 glfwDestroyCursor	
 glfwGetClipboardString		
 glfwGetCursorPos	
@@ -161,10 +180,10 @@ glfwGetMouseButton
 glfwGetPhysicalDevicePresentationSupport		
 glfwGetProcAddress	
 glfwGetRequiredInstanceExtensions	
-glfwGetTimerFrequency	
-glfwGetTimerValue	
+	
 glfwGetVideoMode	
 glfwGetVideoModes	
+
 glfwGetWGLContext	
 glfwGetWin32Adapter	
 glfwGetWin32Monitor	
@@ -177,6 +196,6 @@ glfwSetCursorPos
 	
 glfwSetInputMode			
 glfwVulkanSupported	
-glfwWindowHint	
+
 
 */

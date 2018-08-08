@@ -4,6 +4,8 @@
 #include "common.h"
 #include "window.h"
 #include "monitor.h"
+#include "image.h"
+#include "cursor.h"
 #include "video_mode.h"
 
 void rb_glfw_error_callback(int error, const char *message);

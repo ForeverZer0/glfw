@@ -3,27 +3,24 @@ require_relative "glfw/glfw"
 
 module GLFW
 
-  # class Window
+  self.init
 
-  #   def on_close(proc = nil, &block)
 
-  #   end
-  # end
+  window = Window.new(800, 600, "Hello, World!")
 
-  # self.init
-
-  # p Monitor.primary
-
-  # window = Window.new(800, 600, "Hello, World!")
-  # window.make_current
+  window.make_current
   # window.aspect_ratio(4, 3)
   # window.show
 
-  # self.swap_interval(1)
-  # until window.closing?
-  #   self.wait_events
-  #   window.swap_buffers
-  # end
+  self.swap_interval(1)
 
-  # self.terminate
+  window.enable_callback(7892, true)
+
+  until window.closing?
+    self.wait_events
+    window.swap_buffers
+  end
+
+  window.destroy
+  self.terminate
 end

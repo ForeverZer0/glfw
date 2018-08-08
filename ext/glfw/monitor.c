@@ -18,9 +18,13 @@ void Init_glfw_monitor(VALUE module) {
     rb_define_method(rb_cGLFWmonitor, "gamma", rb_glfw_monitor_gamma, 1);
     rb_define_method(rb_cGLFWmonitor, "gamma_ramp", rb_glfw_monitor_get_gamma_ramp, 0);
     rb_define_method(rb_cGLFWmonitor, "set_gamma_ramp", rb_glfw_monitor_set_gamma_ramp, -1);
+    rb_define_method(rb_cGLFWmonitor, "video_mode", rb_glfw_monitor_video_mode, 0);
+    rb_define_method(rb_cGLFWmonitor, "video_modes", rb_glfw_monitor_video_modes, 0);
 
     rb_define_singleton_method(rb_cGLFWmonitor, "primary", rb_glfw_monitor_primary, 0);
     rb_define_const(rb_cGLFWmonitor, "NONE", rb_glfw_monitor_alloc(rb_cGLFWmonitor));
+
+    rb_funcall(rb_cGLFWmonitor, rb_intern("private_class_method"), 1, STR2SYM("new"));
 }
 
 static VALUE rb_glfw_monitor_alloc(VALUE klass) {
@@ -186,3 +190,20 @@ VALUE rb_glfw_monitor_primary(VALUE klass) {
     return Data_Wrap_Struct(klass, NULL, RUBY_DEFAULT_FREE, m);
 }
 
+VALUE rb_glfw_monitor_video_mode(VALUE self) {
+    MONITOR();
+    const GLFWvidmode *v = glfwGetVideoMode(m);
+    return Data_Wrap_Struct(rb_cGLFWvidmode, NULL, RUBY_DEFAULT_FREE,  (void*) v);
+}
+
+VALUE rb_glfw_monitor_video_modes(VALUE self) {
+    MONITOR();
+    int count;
+    const GLFWvidmode *modes = glfwGetVideoModes(m, &count);
+    VALUE ary = rb_ary_new_capa(count);
+    for (int i = 0; i < count; i++)
+    {
+        rb_ary_store(ary, i, Data_Wrap_Struct(rb_cGLFWvidmode, NULL, RUBY_DEFAULT_FREE, (void*) &modes[i]));
+    }
+    return ary;
+}

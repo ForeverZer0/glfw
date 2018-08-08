@@ -48,6 +48,7 @@ void Init_glfw_window(VALUE mmodule) {
     rb_define_method(rb_cGLFWwindow, "move", rb_glfw_window_set_pos, 2);
     rb_define_method(rb_cGLFWwindow, "size", rb_glfw_window_get_size, 0);
     rb_define_method(rb_cGLFWwindow, "resize", rb_glfw_window_set_size, 2);
+    rb_define_method(rb_cGLFWwindow, "framebuffer_size", rb_glfw_window_get_framebuffer_size, 0);
     rb_define_method(rb_cGLFWwindow, "x", rb_glfw_window_get_x, 0);
     rb_define_method(rb_cGLFWwindow, "y", rb_glfw_window_get_y, 0);
     rb_define_method(rb_cGLFWwindow, "width", rb_glfw_window_get_width, 0);
@@ -234,6 +235,16 @@ VALUE rb_glfw_window_set_size(VALUE self, VALUE width, VALUE height) {
     WINDOW();
     glfwSetWindowSize(w, NUM2INT(width), NUM2INT(height));
     return self;
+}
+
+VALUE rb_glfw_window_get_framebuffer_size(VALUE self) {
+    WINDOW();
+    int width, height;
+    glfwGetFramebufferSize(w, &width, &height);
+    VALUE ary = rb_ary_new_capa(2);
+    rb_ary_store(ary, 0, INT2NUM(width));
+    rb_ary_store(ary, 1, INT2NUM(height));
+    return ary;
 }
 
 VALUE rb_glfw_window_get_x(VALUE self) {

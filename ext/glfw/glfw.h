@@ -25,5 +25,12 @@ VALUE rb_glfw_load_default_hints(VALUE klass);
 VALUE rb_glfw_window_hint(VALUE klass, VALUE hint, VALUE value);
 VALUE rb_glfw_key_name(VALUE klass, VALUE key, VALUE scancode);
 VALUE rb_glfw_vulkan_p(VALUE klass);
+VALUE rb_glfw_post_empty(VALUE klass);
+VALUE rb_glfw_timer_frequency(VALUE klass);
+VALUE rb_glfw_timer_value(VALUE klass);
+VALUE rb_glfw_joystick_p(VALUE klass, VALUE joystick);
+VALUE rb_glfw_joystick_name(VALUE klass, VALUE joystick);
+VALUE rb_glfw_joystick_axes(VALUE klass, VALUE joystick);
+VALUE rb_glfw_joystick_buttons(VALUE klass, VALUE joystick);
 
 #endif /* GLFW_RB_H */

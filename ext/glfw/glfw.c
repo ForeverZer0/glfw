@@ -23,6 +23,7 @@ void Init_glfw(void) {
     rb_define_singleton_method(rb_mGLFW, "terminate", rb_glfw_terminate, 0);
     rb_define_singleton_method(rb_mGLFW, "poll_events", rb_glfw_poll_events, 0);
     rb_define_singleton_method(rb_mGLFW, "wait_events", rb_glfw_wait_events, 0);
+    rb_define_singleton_method(rb_mGLFW, "post_empty_event", rb_glfw_post_empty, 0);
     rb_define_singleton_method(rb_mGLFW, "swap_interval", rb_glfw_swap_interval, 1);
     rb_define_singleton_method(rb_mGLFW, "current_context", rb_glfw_current_context, 0);
     rb_define_singleton_method(rb_mGLFW, "supported?", rb_glfw_supported_p, 1);
@@ -33,6 +34,8 @@ void Init_glfw(void) {
     rb_define_singleton_method(rb_mGLFW, "hint", rb_glfw_window_hint, 2);
     rb_define_singleton_method(rb_mGLFW, "key_name", rb_glfw_key_name, 2);
     rb_define_singleton_method(rb_mGLFW, "vulkan_support?", rb_glfw_vulkan_p, 0);
+    rb_define_singleton_method(rb_mGLFW, "timer_frequency", rb_glfw_timer_frequency, 0);
+    rb_define_singleton_method(rb_mGLFW, "timer_value", rb_glfw_timer_value, 0);
 
     // Version Constants
     rb_define_const(rb_mGLFW, "API_VERSION", rb_sprintf("%d.%d.%d", 
@@ -60,6 +63,8 @@ void Init_glfw(void) {
     rb_define_const(rb_mGLFW, "CB_FILE_DROP", INT2NUM((int) GLFW_RB_FILE_DROP));
     rb_define_const(rb_mGLFW, "CB_MONITOR", INT2NUM((int) GLFW_RB_MONITOR));
     rb_define_const(rb_mGLFW, "CB_JOYSTICK", INT2NUM((int) GLFW_RB_JOYSTICK));
+
+    
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -154,7 +159,18 @@ VALUE rb_glfw_vulkan_p(VALUE klass) {
     return glfwVulkanSupported() ? Qtrue : Qfalse;
 }
 
+VALUE rb_glfw_post_empty(VALUE klass) {
+    glfwPostEmptyEvent();
+    return Qnil;
+}
 
+VALUE rb_glfw_timer_frequency(VALUE klass) {
+    return ULL2NUM(glfwGetTimerFrequency());
+}
+
+VALUE rb_glfw_timer_value(VALUE klass) {
+    return ULL2NUM(glfwGetTimerValue());
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Window Class (Instance Methods)
@@ -167,35 +183,62 @@ VALUE rb_glfw_vulkan_p(VALUE klass) {
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+
 /*	\
-	
-		
 
-glfwGetTimerFrequency	
-glfwGetTimerValue
+glfwSetJoystickCallback	*/
 
-glfwSetJoystickCallback		
+VALUE rb_glfw_joystick_buttons(VALUE klass, VALUE joystick) {
+    int count;
+    unsigned char *buttons = glfwGetJoystickButtons(NUM2INT(joystick), &count);
+    VALUE ary = rb_ary_new_capa(count);
+    for (int i = 0; i < count; i++)
+        rb_ary_store(ary, i, INT2NUM(buttons[i]));
+    return ary;
+}
+
+VALUE rb_glfw_joystick_axes(VALUE klass, VALUE joystick) {
+    int count;
+    float *axes = glfwGetJoystickAxes(NUM2INT(joystick), &count);
+    VALUE ary = rb_ary_new_capa(count);
+    for (int i = 0; i < count; i++)
+        rb_ary_store(ary, i, DBL2NUM(axes[i]));
+    return ary;
+}
+
+VALUE rb_glfw_joystick_name(VALUE klass, VALUE joystick) {
+    const char *name = glfwGetJoystickName(NUM2INT(joystick));
+    return rb_utf8_str_new_cstr(name);
+}
+
+VALUE rb_glfw_joystick_p(VALUE klass, VALUE joystick) {
+    return INT2BOOL(glfwJoystickPresent(NUM2INT(joystick)));
+}
+
+/*
+
+
+
 glfwSetMonitorCallback	
 	
 glfwGetCursorPos	
-glfwGetFramebufferSize	
+glfwSetCursorPos
+
 glfwGetInputMode	
+glfwSetInputMode
+
 glfwGetInstanceProcAddress	
-glfwGetJoystickAxes	
-glfwGetJoystickButtons	
-glfwGetJoystickName	
 glfwGetKey		
 glfwGetMouseButton	
 glfwGetPhysicalDevicePresentationSupport		
 glfwGetProcAddress	
-glfwGetRequiredInstanceExtensions				
-glfwJoystickPresent		
-glfwPostEmptyEvent		
+glfwGetRequiredInstanceExtensions			
 
 glfwSetCursor	
-glfwSetCursorPos			
+			
 	
-glfwSetInputMode			
+			
 	
 
 
@@ -210,3 +253,5 @@ glfwGetEGLDisplay
 glfwGetEGLSurface	
 
 */
+
+

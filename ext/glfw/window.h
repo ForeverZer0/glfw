@@ -30,6 +30,7 @@ VALUE rb_glfw_window_get_width(VALUE self);
 VALUE rb_glfw_window_get_height(VALUE self);
 VALUE rb_glfw_window_set_width(VALUE self, VALUE width);
 VALUE rb_glfw_window_set_height(VALUE self, VALUE height);
+VALUE rb_glfw_window_get_framebuffer_size(VALUE self);
 VALUE rb_glfw_window_closing_p(VALUE self);
 VALUE rb_glfw_window_close(int argc, VALUE *argv, VALUE self);
 VALUE rb_glfw_window_get_monitor(VALUE self);

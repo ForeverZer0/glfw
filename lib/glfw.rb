@@ -4,18 +4,14 @@ require_relative "glfw/glfw"
 module GLFW
 
 
-
-
-
-
-
-
   class Window
 
 
   end
 
-  self.init
+  p self.init
+
+  p self.vulkan_required_ext
 
   window = Window.new(800, 600, "Hello, World!")
 

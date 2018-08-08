@@ -41,5 +41,6 @@ extern VALUE rb_cGLFWmonitor;
 extern VALUE rb_cGLFWvidmode;
 extern VALUE rb_cGLFWimage;
 extern VALUE rb_cGLFWcursor;
+extern VALUE rb_cGLFWvulkan;
 
 #endif /* GLFW_RB_COMMON_H */

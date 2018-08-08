@@ -7,9 +7,11 @@
 #include "image.h"
 #include "cursor.h"
 #include "video_mode.h"
+#include "vulkan.h"
 
 void rb_glfw_error_callback(int error, const char *message);
-void rb_glfw_monitor_callback(GLFWmonitor monitor, int connected);
+void rb_glfw_monitor_callback(GLFWmonitor *monitor, int connected);
+void rb_glfw_joystick_callback(int joystick, int connected);
 
 VALUE rb_glfw_init(VALUE klass);
 VALUE rb_glfw_terminate(VALUE klass);
@@ -25,7 +27,6 @@ VALUE rb_glfw_monitors(VALUE klass);
 VALUE rb_glfw_load_default_hints(VALUE klass);
 VALUE rb_glfw_window_hint(VALUE klass, VALUE hint, VALUE value);
 VALUE rb_glfw_key_name(VALUE klass, VALUE key, VALUE scancode);
-VALUE rb_glfw_vulkan_p(VALUE klass);
 VALUE rb_glfw_post_empty(VALUE klass);
 VALUE rb_glfw_timer_frequency(VALUE klass);
 VALUE rb_glfw_timer_value(VALUE klass);
@@ -34,5 +35,7 @@ VALUE rb_glfw_joystick_name(VALUE klass, VALUE joystick);
 VALUE rb_glfw_joystick_axes(VALUE klass, VALUE joystick);
 VALUE rb_glfw_joystick_buttons(VALUE klass, VALUE joystick);
 VALUE rb_glfw_monitor_changed(VALUE klass, VALUE monitor, VALUE connected);
+VALUE rb_glfw_joystick_changed(VALUE klass, VALUE joystick, VALUE connected);
+VALUE rb_glfw_proc_address(VALUE klass, VALUE name);
 
 #endif /* GLFW_RB_H */

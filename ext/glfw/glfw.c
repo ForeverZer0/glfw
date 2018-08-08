@@ -3,11 +3,11 @@
 VALUE rb_mGLFW;
 VALUE rb_eGLFWError;
 
-
 // TODO: Window class, internal loop timing to reduce overhead 
 
 void Init_glfw(void) {
 
+    glfwSetErrorCallback(rb_glfw_error_callback);
     rb_mGLFW = rb_define_module("GLFW");
     rb_eGLFWError = rb_define_class_under(rb_mGLFW, "GLFWError", rb_eStandardError);
 
@@ -16,6 +16,7 @@ void Init_glfw(void) {
     Init_glfw_vidmode(rb_mGLFW);
     Init_glfw_image(rb_mGLFW);
     Init_glfw_cursor(rb_mGLFW);
+    Init_glfw_vulkan(rb_mGLFW);
 
     // GLFW Module Functions
     rb_define_singleton_method(rb_mGLFW, "init", rb_glfw_init, 0);
@@ -32,14 +33,11 @@ void Init_glfw(void) {
     rb_define_singleton_method(rb_mGLFW, "load_default_hints", rb_glfw_load_default_hints, 0);
     rb_define_singleton_method(rb_mGLFW, "hint", rb_glfw_window_hint, 2);
     rb_define_singleton_method(rb_mGLFW, "key_name", rb_glfw_key_name, 2);
-    rb_define_singleton_method(rb_mGLFW, "vulkan_support?", rb_glfw_vulkan_p, 0);
     rb_define_singleton_method(rb_mGLFW, "timer_frequency", rb_glfw_timer_frequency, 0);
     rb_define_singleton_method(rb_mGLFW, "timer_value", rb_glfw_timer_value, 0);
     rb_define_singleton_method(rb_mGLFW, "monitor_changed", rb_glfw_monitor_changed, 2);
-
-    // Set Callbacks
-    glfwSetErrorCallback(rb_glfw_error_callback);
-    glfwSetMonitorCallback(rb_glfw_monitor_callback);
+    rb_define_singleton_method(rb_mGLFW, "joystick_changed", rb_glfw_joystick_changed, 2);
+    rb_define_singleton_method(rb_mGLFW, "proc_address", rb_glfw_proc_address, 1);
 
     // API Version 
     rb_define_const(rb_mGLFW, "API_VERSION", rb_sprintf("%d.%d.%d", 
@@ -274,10 +272,6 @@ void Init_glfw(void) {
 
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 void rb_glfw_error_callback(int error, const char *message) {
     rb_raise(rb_eGLFWError, message);
 } 
@@ -287,8 +281,18 @@ void rb_glfw_monitor_callback(GLFWmonitor *monitor, int connected) {
     rb_funcall(rb_mGLFW, rb_intern("monitor_changed"), 2, m, INT2BOOL(connected));
 }
 
+void rb_glfw_joystick_callback(int joystick, int connected) {
+    rb_funcall(rb_mGLFW, rb_intern("joystick_changed"), 2, INT2NUM(joystick), INT2BOOL(connected));
+}
+
 VALUE rb_glfw_init(VALUE klass) {
-    return glfwInit() ? Qtrue : Qfalse;
+    if (glfwInit())
+    {
+        glfwSetMonitorCallback(rb_glfw_monitor_callback);
+        glfwSetJoystickCallback(rb_glfw_joystick_callback);
+        return Qtrue;
+    }
+    return Qfalse;
 }
 
 VALUE rb_glfw_terminate(VALUE klass) {
@@ -367,10 +371,6 @@ VALUE rb_glfw_key_name(VALUE klass, VALUE key, VALUE scancode) {
     return rb_utf8_str_new_cstr(name);
 }
 
-VALUE rb_glfw_vulkan_p(VALUE klass) {
-    return glfwVulkanSupported() ? Qtrue : Qfalse;
-}
-
 VALUE rb_glfw_post_empty(VALUE klass) {
     glfwPostEmptyEvent();
     return Qnil;
@@ -384,22 +384,9 @@ VALUE rb_glfw_timer_value(VALUE klass) {
     return ULL2NUM(glfwGetTimerValue());
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Window Class (Instance Methods)
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// glfwGetWindowAttrib	// TODO: Any other context hints?
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-/*	\
-
-glfwSetJoystickCallback	*/
+VALUE rb_glfw_joystick_changed(VALUE klass, VALUE joystick, VALUE connected) {
+    return Qnil;
+}
 
 VALUE rb_glfw_joystick_buttons(VALUE klass, VALUE joystick) {
     int count;
@@ -432,25 +419,20 @@ VALUE rb_glfw_monitor_changed(VALUE klass, VALUE monitor, VALUE connected) {
     return Qnil;
 }
 
-/*
+VALUE rb_glfw_proc_address(VALUE klass, VALUE name) {
+    Check_Type(name, T_STRING);
+    size_t proc = (size_t) glfwGetProcAddress(StringValueCStr(name));
+    return LL2NUM(proc);
+}
 
-
-glfwGetPhysicalDevicePresentationSupport		
-glfwGetProcAddress	
-glfwGetRequiredInstanceExtensions			
-
-	
-			
-glfwGetInstanceProcAddress
+/*		
 glfwGetWGLContext
-glfwCreateWindowSurface
 glfwGetWin32Adapter	
 glfwGetWin32Monitor	
 glfwGetWin32Window
 glfwGetEGLContext	
 glfwGetEGLDisplay	
 glfwGetEGLSurface	
-
 */
 
 

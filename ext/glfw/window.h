@@ -45,7 +45,8 @@ VALUE rb_glfw_window_floating_p(VALUE self);
 VALUE rb_glfw_window_aspect_ratio(VALUE self, VALUE numerator, VALUE denominator);
 VALUE rb_glfw_window_limits(VALUE self, VALUE minWidth, VALUE minHeight, VALUE maxWidth, VALUE maxHeight);
 VALUE  rb_glfw_window_frame_size(VALUE self);
-
+VALUE rb_glfw_window_get_clipboard(VALUE self);
+VALUE rb_glfw_window_set_clipboard(VALUE self, VALUE str);
 
 /////////////////////////////////////////////////////////////////////////////
 // Callbacks

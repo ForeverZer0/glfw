@@ -412,6 +412,19 @@ VALUE rb_glfw_window_frame_size(VALUE self) {
     return ary;
 }
 
+VALUE rb_glfw_window_get_clipboard(VALUE self) {
+    WINDOW();
+    const char *str = glfwGetClipboardString(w);
+    return rb_utf8_str_new_cstr(str);
+}
+
+VALUE rb_glfw_window_set_clipboard(VALUE self, VALUE str) {
+    WINDOW();
+    volatile VALUE utf8 = rb_funcall(str, rb_intern("encode"), 1, rb_str_new_cstr("utf-8"));
+    glfwSetClipboardString(w, StringValueCStr(utf8));
+    return str;
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // Callbacks
 /////////////////////////////////////////////////////////////////////////////
@@ -567,8 +580,14 @@ static void rb_glfw_window_file_drop(GLFWwindow *window, int count, const char *
     VALUE w = (VALUE)glfwGetWindowUserPointer(window);
     if (RTEST(w)) {
         VALUE ary = rb_ary_new_capa(count);
-        for (int i = 0; i < count; i++)
-            rb_ary_store(ary, i, rb_str_new_cstr(files[i]));
+        for (int i = 0; i < count; i++){
+            char *pos = strchr(files[i], '\\');
+            while (pos) {
+                *pos = '/';
+                pos = strchr(pos, '\\'); 
+            }
+            rb_ary_store(ary, i, rb_utf8_str_new_cstr(files[i]));
+        }
         rb_funcall(w, id_file_drop, 1, ary);
     }
 }

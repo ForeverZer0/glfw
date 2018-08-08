@@ -21,5 +21,9 @@ VALUE rb_glfe_event_timeout(VALUE klass, VALUE timeout);
 VALUE rb_glfw_current_context(VALUE klass);
 VALUE rb_glfw_supported_p(VALUE klass, volatile VALUE extension);
 VALUE rb_glfw_monitors(VALUE klass);
+VALUE rb_glfw_load_default_hints(VALUE klass);
+VALUE rb_glfw_window_hint(VALUE klass, VALUE hint, VALUE value);
+VALUE rb_glfw_key_name(VALUE klass, VALUE key, VALUE scancode);
+VALUE rb_glfw_vulkan_p(VALUE klass);
 
 #endif /* GLFW_RB_H */

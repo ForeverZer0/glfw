@@ -29,6 +29,10 @@ void Init_glfw(void) {
     rb_define_singleton_method(rb_mGLFW, "time", rb_glfw_get_time, 0);
     rb_define_singleton_method(rb_mGLFW, "time=", rb_glfw_set_time, 1);
     rb_define_singleton_method(rb_mGLFW, "monitors", rb_glfw_monitors, 0);
+    rb_define_singleton_method(rb_mGLFW, "load_default_hints", rb_glfw_load_default_hints, 0);
+    rb_define_singleton_method(rb_mGLFW, "hint", rb_glfw_window_hint, 2);
+    rb_define_singleton_method(rb_mGLFW, "key_name", rb_glfw_key_name, 2);
+    rb_define_singleton_method(rb_mGLFW, "vulkan_support?", rb_glfw_vulkan_p, 0);
 
     // Version Constants
     rb_define_const(rb_mGLFW, "API_VERSION", rb_sprintf("%d.%d.%d", 
@@ -57,12 +61,6 @@ void Init_glfw(void) {
     rb_define_const(rb_mGLFW, "CB_MONITOR", INT2NUM((int) GLFW_RB_MONITOR));
     rb_define_const(rb_mGLFW, "CB_JOYSTICK", INT2NUM((int) GLFW_RB_JOYSTICK));
 }
-
-#ifndef HEADER
-
-
-
-#endif
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -129,6 +127,34 @@ VALUE rb_glfw_monitors(VALUE klass) {
     return ary;
 }
 
+VALUE rb_glfw_load_default_hints(VALUE klass) {
+    glfwDefaultWindowHints();
+    return Qnil;
+}
+
+VALUE rb_glfw_window_hint(VALUE klass, VALUE hint, VALUE value) {
+    int hintvalue;
+    if (NIL_P(value))
+        hintvalue = GLFW_DONT_CARE;
+    else if (FIXNUM_P(value))
+        hintvalue = NUM2INT(value);
+    else
+        hintvalue = RTEST(value);
+    glfwWindowHint(NUM2INT(hint), hintvalue);
+
+    return Qnil;
+}
+
+VALUE rb_glfw_key_name(VALUE klass, VALUE key, VALUE scancode) {
+    const char *name = glfwGetKeyName(NUM2INT(key), NUM2INT(scancode));
+    return rb_utf8_str_new_cstr(name);
+}
+
+VALUE rb_glfw_vulkan_p(VALUE klass) {
+    return glfwVulkanSupported() ? Qtrue : Qfalse;
+}
+
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Window Class (Instance Methods)
@@ -137,22 +163,16 @@ VALUE rb_glfw_monitors(VALUE klass) {
 // glfwGetWindowAttrib	// TODO: Any other context hints?
 
 
-// VALUE rb_glfw_window_
-// VALUE rb_glfw_window_
-// VALUE rb_glfw_window_
-// VALUE rb_glfw_window_
-// VALUE rb_glfw_window_
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /*	\
 	
-glfwSetWindowIcon	
-glfwDefaultWindowHints
-glfwWindowHint	
-glfwCreateWindowSurface
+
+
+
+glfwSetWindowIcon		
 
 glfwGetTimerFrequency	
 glfwGetTimerValue
@@ -160,42 +180,36 @@ glfwGetTimerValue
 glfwSetJoystickCallback		
 glfwSetMonitorCallback	
 	
-glfwCreateCursor	
-glfwCreateStandardCursor		
-glfwDestroyCursor	
-glfwGetClipboardString		
 glfwGetCursorPos	
-glfwGetEGLContext	
-glfwGetEGLDisplay	
-glfwGetEGLSurface	
 glfwGetFramebufferSize	
 glfwGetInputMode	
 glfwGetInstanceProcAddress	
 glfwGetJoystickAxes	
 glfwGetJoystickButtons	
 glfwGetJoystickName	
-glfwGetKey	
-glfwGetKeyName	
+glfwGetKey		
 glfwGetMouseButton	
 glfwGetPhysicalDevicePresentationSupport		
 glfwGetProcAddress	
-glfwGetRequiredInstanceExtensions	
-	
-glfwGetVideoMode	
-glfwGetVideoModes	
-
-glfwGetWGLContext	
-glfwGetWin32Adapter	
-glfwGetWin32Monitor	
-glfwGetWin32Window		
+glfwGetRequiredInstanceExtensions				
 glfwJoystickPresent		
-glfwPostEmptyEvent	
-glfwSetClipboardString	
+glfwPostEmptyEvent		
+
 glfwSetCursor	
 glfwSetCursorPos			
 	
 glfwSetInputMode			
-glfwVulkanSupported	
+	
+    
 
+
+glfwGetWGLContext
+glfwCreateWindowSurface
+glfwGetWin32Adapter	
+glfwGetWin32Monitor	
+glfwGetWin32Window
+glfwGetEGLContext	
+glfwGetEGLDisplay	
+glfwGetEGLSurface	
 
 */

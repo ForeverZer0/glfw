@@ -3,8 +3,12 @@ require_relative "glfw/glfw"
 
 module GLFW
 
-  self.init
+  class Window
 
+
+  end
+
+  self.init
 
   window = Window.new(800, 600, "Hello, World!")
 
@@ -14,7 +18,7 @@ module GLFW
 
   self.swap_interval(1)
 
-  window.enable_callback(7892, true)
+  window.enable_callback(CB_FILE_DROP, true)
 
   until window.closing?
     self.wait_events

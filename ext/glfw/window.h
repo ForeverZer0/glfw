@@ -49,6 +49,19 @@ VALUE  rb_glfw_window_frame_size(VALUE self);
 VALUE rb_glfw_window_get_clipboard(VALUE self);
 VALUE rb_glfw_window_set_clipboard(VALUE self, VALUE str);
 VALUE rb_glfw_window_set_icon(VALUE self, VALUE args);
+VALUE rb_glfw_window_get_input_cursor(VALUE self);
+VALUE rb_glfw_window_set_input_cursor(VALUE self, VALUE value);
+VALUE rb_glfw_window_get_input_sticky_keys(VALUE self);
+VALUE rb_glfw_window_set_input_sticky_keys(VALUE self, VALUE value);
+VALUE rb_glfw_window_get_input_sticky_mouse(VALUE self);
+VALUE rb_glfw_window_set_input_sticky_mouse(VALUE self, VALUE value);
+VALUE rb_glfw_window_cursor_pos(VALUE self);
+VALUE rb_glfw_window_set_cursor_pos(VALUE self, VALUE x, VALUE y);
+VALUE rb_glfw_window_set_cursor(VALUE self, VALUE cursor);
+VALUE rb_glfw_window_get_key(VALUE self, VALUE key);
+VALUE rb_glfw_window_get_mouse_button(VALUE self, VALUE mbtn);
+
+
 
 
 /////////////////////////////////////////////////////////////////////////////

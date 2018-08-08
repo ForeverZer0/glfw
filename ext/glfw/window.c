@@ -72,6 +72,19 @@ void Init_glfw_window(VALUE mmodule) {
     rb_define_method(rb_cGLFWwindow, "size_limits", rb_glfw_window_limits, 4);
     rb_define_method(rb_cGLFWwindow, "frame_size", rb_glfw_window_frame_size, 0);
 
+    rb_define_method(rb_cGLFWwindow, "set_cursor", rb_glfw_window_set_cursor, 1);
+    rb_define_method(rb_cGLFWwindow, "cursor_pos", rb_glfw_window_cursor_pos, 0);
+    rb_define_method(rb_cGLFWwindow, "set_cursor_pos", rb_glfw_window_set_cursor_pos, 2);
+    rb_define_method(rb_cGLFWwindow, "cursor", rb_glfw_window_get_input_cursor, 0);
+    rb_define_method(rb_cGLFWwindow, "cursor=", rb_glfw_window_set_input_cursor, 1);
+    rb_define_method(rb_cGLFWwindow, "sticky_keys", rb_glfw_window_get_input_sticky_keys, 0);
+    rb_define_method(rb_cGLFWwindow, "sticky_keys=", rb_glfw_window_set_input_sticky_keys, 1);
+    rb_define_method(rb_cGLFWwindow, "sticky_mouse", rb_glfw_window_get_input_sticky_mouse, 0);
+    rb_define_method(rb_cGLFWwindow, "sticky_mouse=", rb_glfw_window_set_input_sticky_mouse, 1);
+
+    rb_define_method(rb_cGLFWwindow, "key_down?", rb_glfw_window_get_key, 1);
+    rb_define_method(rb_cGLFWwindow, "mouse_down?", rb_glfw_window_get_mouse_button, 1);
+
     // Callbacks
     RB_CALLBACK(id_moved, "moved");
     RB_CALLBACK(id_refreshed, "resized");
@@ -134,6 +147,11 @@ VALUE rb_glfw_window_initialize(int argc, VALUE *argv, VALUE self) {
 
     // Store the Ruby VALUE as a "user pointer" to get the Ruby instance from the C struct
     glfwSetWindowUserPointer(window, (void *)self);
+
+    if (rb_block_given_p()) {
+        rb_yield(self);
+        glfwDestroyWindow(window);
+    }
 
     return Qnil;
 }
@@ -441,16 +459,82 @@ VALUE rb_glfw_window_set_icon(VALUE self, VALUE args) {
     int argc = rb_array_len(args);
     GLFWimage *images = malloc(sizeof(GLFWimage) * argc);
 
-    for (int i = 0; i < argc; i++)
-    {
+    for (int i = 0; i < argc; i++) {
         VALUE img = rb_ary_entry(args, i);
-        images[i] = *(GLFWimage*) RDATA(img)->data;
+        images[i] = *(GLFWimage *)RDATA(img)->data;
     }
 
     glfwSetWindowIcon(w, argc, images);
 
     free(images);
     return self;
+}
+
+VALUE rb_glfw_window_get_input_cursor(VALUE self) {
+    WINDOW();
+    return INT2BOOL(glfwGetInputMode(w, GLFW_CURSOR));
+}
+
+VALUE rb_glfw_window_set_input_cursor(VALUE self, VALUE value) {
+    WINDOW();
+    glfwSetInputMode(w, GLFW_CURSOR, RTEST(value));
+    return value;
+}
+
+VALUE rb_glfw_window_get_input_sticky_keys(VALUE self) {
+    WINDOW();
+    return INT2BOOL(glfwGetInputMode(w, GLFW_STICKY_KEYS));
+}
+
+VALUE rb_glfw_window_set_input_sticky_keys(VALUE self, VALUE value) {
+    WINDOW();
+    glfwSetInputMode(w, GLFW_STICKY_KEYS, RTEST(value));
+    return value;
+}
+
+VALUE rb_glfw_window_get_input_sticky_mouse(VALUE self) {
+    WINDOW();
+    return INT2BOOL(glfwGetInputMode(w, GLFW_STICKY_MOUSE_BUTTONS));
+}
+
+VALUE rb_glfw_window_set_input_sticky_mouse(VALUE self, VALUE value) {
+    WINDOW();
+    glfwSetInputMode(w, GLFW_STICKY_MOUSE_BUTTONS, RTEST(value));
+    return value;
+}
+
+VALUE rb_glfw_window_cursor_pos(VALUE self) {
+    WINDOW();
+    double x, y;
+    glfwGetCursorPos(w, &x, &y);
+    VALUE ary = rb_ary_new_capa(2);
+    rb_ary_store(ary, 0, DBL2NUM(x));
+    rb_ary_store(ary, 1, DBL2NUM(y));
+    return ary;
+}
+
+VALUE rb_glfw_window_set_cursor_pos(VALUE self, VALUE x, VALUE y) {
+    WINDOW();
+    glfwSetCursorPos(w, NUM2DBL(x), NUM2DBL(y));
+    return self;
+}
+
+VALUE rb_glfw_window_set_cursor(VALUE self, VALUE cursor) {
+    WINDOW();
+    GLFWcursor *c;
+    Data_Get_Struct(cursor, GLFWcursor, c);
+    glfwSetCursor(w, c);
+    return self;
+}
+
+VALUE rb_glfw_window_get_key(VALUE self, VALUE key) {
+    WINDOW();
+    return RTEST(glfwGetKey(w, NUM2INT(key)));
+}
+
+VALUE rb_glfw_window_get_mouse_button(VALUE self, VALUE mbtn) {
+    WINDOW();
+    return RTEST(glfwGetMouseButton(w, NUM2INT(mbtn)));
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -585,34 +669,34 @@ static void rb_glfw_window_mouse_enter(GLFWwindow *window, int entered) {
     if (RTEST(w))
         rb_funcall(w, id_mouse_enter, 1, INT2BOOL(entered));
 }
- 
+
 static void rb_glfw_window_key(GLFWwindow *window, int key, int scancode, int action, int mods) {
     VALUE w = (VALUE)glfwGetWindowUserPointer(window);
     if (RTEST(w))
-        rb_funcall(w, id_key, 4, INT2NUM(key), INT2NUM(scancode), INT2NUM(action), INT2NUM(mods));  
+        rb_funcall(w, id_key, 4, INT2NUM(key), INT2NUM(scancode), INT2NUM(action), INT2NUM(mods));
 }
 
 static void rb_glfw_window_char(GLFWwindow *window, unsigned int codepoint) {
     VALUE w = (VALUE)glfwGetWindowUserPointer(window);
     if (RTEST(w))
-        rb_funcall(w, id_char, 1, UINT2NUM(codepoint)); 
+        rb_funcall(w, id_char, 1, UINT2NUM(codepoint));
 }
 
 static void rb_glfw_window_char_mods(GLFWwindow *window, unsigned int codepoint, int mods) {
     VALUE w = (VALUE)glfwGetWindowUserPointer(window);
     if (RTEST(w))
-        rb_funcall(w, id_char_mods, 2, UINT2NUM(codepoint), INT2NUM(mods));  
+        rb_funcall(w, id_char_mods, 2, UINT2NUM(codepoint), INT2NUM(mods));
 }
 
 static void rb_glfw_window_file_drop(GLFWwindow *window, int count, const char **files) {
     VALUE w = (VALUE)glfwGetWindowUserPointer(window);
     if (RTEST(w)) {
         VALUE ary = rb_ary_new_capa(count);
-        for (int i = 0; i < count; i++){
+        for (int i = 0; i < count; i++) {
             char *pos = strchr(files[i], '\\');
             while (pos) {
                 *pos = '/';
-                pos = strchr(pos, '\\'); 
+                pos = strchr(pos, '\\');
             }
             rb_ary_store(ary, i, rb_utf8_str_new_cstr(files[i]));
         }

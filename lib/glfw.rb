@@ -3,6 +3,13 @@ require_relative "glfw/glfw"
 
 module GLFW
 
+
+
+
+
+
+
+
   class Window
 
 
@@ -32,3 +39,4 @@ module GLFW
   window.destroy
   self.terminate
 end
+

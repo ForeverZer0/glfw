@@ -24,16 +24,37 @@ static VALUE rb_glfw_image_alloc(VALUE klass) {
 }
 
 VALUE rb_glfw_image_initialize(int argc, VALUE *argv, VALUE self) {
-    // TODO: Implement
+    if (argc == 2 || argc == 3)
+    {
+        GLFWimage *image = ALLOC(GLFWimage);
+        image->width = NUM2INT(argv[0]);
+        image->height = NUM2INT(argv[1]);
 
-    GLFWimage *image = ALLOC(GLFWimage);
-    image->width = NUM2INT(argv[0]);
-    image->height = NUM2INT(argv[1]);
-    image->pixels = StringValuePtr(argv[2]);
+        if (argc == 3)
+        {
+            if (RB_TYPE_P(argv[2], T_STRING))
+            {
+                image->pixels = StringValuePtr(argv[2]);
+            }
+            else 
+            {
+                uint32_t packed = NUM2UINT(argv[2]);
+                int size = sizeof(uint32_t) * image->width * image->height;
+                image->pixels = malloc(size);
+                memset(image->pixels, packed, size);
+            }
+        }
+        else
+        {
+            int size = 4 * image->width * image->height;
+            image->pixels = malloc(size);
+            memset(image->pixels, 0, size);
+        }
+        RDATA(self)->data = image;
+        return Qnil;
+    }
 
-    RDATA(self)->data = image;
-
-    return Qnil;
+    rb_raise(rb_eArgError, "wrong number of arguments (given %d, expected 2, 3)", argc);
 }
 
 VALUE rb_glfw_image_width(VALUE self) {

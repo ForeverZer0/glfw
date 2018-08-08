@@ -9,6 +9,7 @@
 #include "video_mode.h"
 
 void rb_glfw_error_callback(int error, const char *message);
+void rb_glfw_monitor_callback(GLFWmonitor monitor, int connected);
 
 VALUE rb_glfw_init(VALUE klass);
 VALUE rb_glfw_terminate(VALUE klass);
@@ -32,5 +33,6 @@ VALUE rb_glfw_joystick_p(VALUE klass, VALUE joystick);
 VALUE rb_glfw_joystick_name(VALUE klass, VALUE joystick);
 VALUE rb_glfw_joystick_axes(VALUE klass, VALUE joystick);
 VALUE rb_glfw_joystick_buttons(VALUE klass, VALUE joystick);
+VALUE rb_glfw_monitor_changed(VALUE klass, VALUE monitor, VALUE connected);
 
 #endif /* GLFW_RB_H */

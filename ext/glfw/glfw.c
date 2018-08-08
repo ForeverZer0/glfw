@@ -169,10 +169,7 @@ VALUE rb_glfw_vulkan_p(VALUE klass) {
 
 /*	\
 	
-
-
-
-glfwSetWindowIcon		
+		
 
 glfwGetTimerFrequency	
 glfwGetTimerValue
@@ -200,7 +197,7 @@ glfwSetCursorPos
 	
 glfwSetInputMode			
 	
-    
+
 
 
 glfwGetWGLContext

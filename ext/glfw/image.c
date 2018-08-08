@@ -6,6 +6,7 @@ VALUE rb_cGLFWimage;
 void Init_glfw_image(VALUE module) {
     rb_cGLFWimage = rb_define_class_under(module, "Image", rb_cObject);
     rb_define_alloc_func(rb_cGLFWimage, rb_glfw_image_alloc);
+    rb_define_method(rb_cGLFWimage, "initialize", rb_glfw_image_initialize, -1);
     
     rb_define_method(rb_cGLFWimage, "width", rb_glfw_image_width, 0);
     rb_define_method(rb_cGLFWimage, "height", rb_glfw_image_height, 0);
@@ -24,6 +25,15 @@ static VALUE rb_glfw_image_alloc(VALUE klass) {
 
 VALUE rb_glfw_image_initialize(int argc, VALUE *argv, VALUE self) {
     // TODO: Implement
+
+    GLFWimage *image = ALLOC(GLFWimage);
+    image->width = NUM2INT(argv[0]);
+    image->height = NUM2INT(argv[1]);
+    image->pixels = StringValuePtr(argv[2]);
+
+    RDATA(self)->data = image;
+
+    return Qnil;
 }
 
 VALUE rb_glfw_image_width(VALUE self) {

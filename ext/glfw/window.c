@@ -64,7 +64,7 @@ void Init_glfw_window(VALUE mmodule) {
     rb_define_method(rb_cGLFWwindow, "resizable?", rb_glfw_window_resizable_p, 0);
     rb_define_method(rb_cGLFWwindow, "decorated?", rb_glfw_window_decorated_p, 0);
     rb_define_method(rb_cGLFWwindow, "topmost?", rb_glfw_window_floating_p, 0);
-
+    rb_define_method(rb_cGLFWwindow, "set_icon", rb_glfw_window_set_icon, -2);
     rb_define_method(rb_cGLFWwindow, "enable_callback", rb_glfw_window_enable_callback, 2);
 
     rb_define_method(rb_cGLFWwindow, "aspect_ratio", rb_glfw_window_aspect_ratio, 2);
@@ -423,6 +423,23 @@ VALUE rb_glfw_window_set_clipboard(VALUE self, VALUE str) {
     volatile VALUE utf8 = rb_funcall(str, rb_intern("encode"), 1, rb_str_new_cstr("utf-8"));
     glfwSetClipboardString(w, StringValueCStr(utf8));
     return str;
+}
+
+VALUE rb_glfw_window_set_icon(VALUE self, VALUE args) {
+    WINDOW();
+    int argc = rb_array_len(args);
+    GLFWimage *images = malloc(sizeof(GLFWimage) * argc);
+
+    for (int i = 0; i < argc; i++)
+    {
+        VALUE img = rb_ary_entry(args, i);
+        images[i] = *(GLFWimage*) RDATA(img)->data;
+    }
+
+    glfwSetWindowIcon(w, argc, images);
+
+    free(images);
+    return self;
 }
 
 /////////////////////////////////////////////////////////////////////////////

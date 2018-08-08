@@ -47,6 +47,8 @@ VALUE rb_glfw_window_limits(VALUE self, VALUE minWidth, VALUE minHeight, VALUE m
 VALUE  rb_glfw_window_frame_size(VALUE self);
 VALUE rb_glfw_window_get_clipboard(VALUE self);
 VALUE rb_glfw_window_set_clipboard(VALUE self, VALUE str);
+VALUE rb_glfw_window_set_icon(VALUE self, VALUE args);
+
 
 /////////////////////////////////////////////////////////////////////////////
 // Callbacks

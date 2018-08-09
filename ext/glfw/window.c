@@ -118,6 +118,9 @@ static VALUE rb_glfw_window_alloc(VALUE klass) {
 
 // initialize(width, height, title = '', **options)
 VALUE rb_glfw_window_initialize(int argc, VALUE *argv, VALUE self) {
+    // Initialize GLFW (does nothing and returns immediately if already called)
+    glfwInit();
+
     GLFWmonitor *mon = NULL;
     GLFWwindow *window, *other = NULL;
 

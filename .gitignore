@@ -2,10 +2,13 @@
 /.yardoc
 /_yardoc/
 /coverage/
+/test/
 /doc/
 /pkg/
+MakeFile
 /spec/reports/
 /tmp/
+/temp/
 *.bundle
 *.so
 *.o

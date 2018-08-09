@@ -1,43 +1,104 @@
-# GLFW
+# ![icon](./glfw-icon.png) GLFW
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/glfw`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+This is a Ruby C-extension that for the excellent [GLFW](https://github.com/glfw/glfw) library. Unlike other bindings, this gem goes beyond just providing a 1:1 wrapper of the functions, and has been organized to be used in a more object-oriented, Ruby way. Being statically linked with the included object file during compilation alleviates any headaches with regards to versioning or dependencies, as none are required for this gem.
 
 ## Installation
 
-Add this line to your application's Gemfile:
+One of the other advantages this gem offers is that it does not require external dependencies, not even the GLFW3 API. Instead of linking to an extisting library, the gem includes the headers and `glfw3.a` static library to compile against during installation. This offers a much easier, more consistent installation process, without the end-user required to ensure any pre-existing files are properly installed, or concern over versions. As the API the gem is based quite stable and mature, new realeases are uncommon, though this gem will update as they become available to provide the latest version.
 
-```ruby
-gem 'glfw'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
+### From [RubyGems.org](https://rubygems.org/gems/glfw)
 
     $ gem install glfw
 
+### From Source
+
+Open a terminal/command prompt in the base directory:
+
+    $ gem build glfw.gemspec
+    $ gem install glfw-[VERSION].gem
+
 ## Usage
 
-TODO: Write usage instructions here
+### Window Creation
 
-## Development
+At is simplest, to create a platform-specific window with an OpenGL context requires very little code.
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+```ruby
+GLFW::Window.new(800, 600, "Hello, World!") do |window|
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+  until window.closing?
+    GLFW.poll_events
+    GLFW.swap_buffers
+    # Your rendering code goes here
+  end
+end
+```
+
+You will likely want to fine-tune the created context to what your application requires. GLFW exposes these as "hints", which can be set **before** a window is created.
+
+```ruby
+# Initialize GLFW core
+GLFW.init
+
+# Load default window hints. This will reset any previous hints given
+GLFW.default_hints
+
+# Window will be NOT be decorated (title, border, close widget, etc)
+GLFW.hint(GLFW::HINT_DECORATED, false)
+
+# Specifiy MINIMUM required OpenGL version
+GLFW.hint(GLFW::HINT_CONTEXT_VERSION_MAJOR, 3)
+GLFW.hint(GLFW::HINT_CONTEXT_VERSION_MAJOR, 0)
+```
+
+All constants for creation hints are prefixed with `HINT`.
+
+### Callbacks
+
+GLFW offers a high-level of control of the application window, including callbacks for nearly every relevant system event that effects the window (see documentation for what all callbacks are available). By default, most of these callbacks are disabled, and need enabled with a method call to have them fired. This for performance reasons, as it is inefficient to have them all being invoked if they are not going to be used.
+
+To enable a callback:
+
+```ruby
+window.enable_callback(GLFW::CB_RESIZED, true)
+```
+
+You then have two options; to either alias the `GLFW::Window` class for the relevant callback, or more commonly is to create your own class the inherits from `GLFW::Window`.
+
+```ruby
+class MyGame < GLFW::Window
+
+  def initialize
+    super(800, 600, "My Awesome Game Title", fullscreen: true)
+    enable_callback(GLFW::CB_RESIZED, true)
+  end
+
+  # This method will be invoked when the window is resized.
+  def resized(width, hight)
+    # Your code goes here. 
+    # The "width/height" arguments passed are the new size
+  end
+end
+```
+
+All constants for callbacks are prefixed with `CB`.
+
+## Documentation
+
+The documentation is a work-in-progress.
+
+The GLFW API offers a very in-depth and detailed [documentation](http://www.glfw.org/docs/latest/intro_guide.html) that may be used as a subsitute until complete, and as a fantastic stand-alone source of information to understanding the linrary.
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/glfw. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/ForeverZer0/glfw. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
 
+The [GLFW API](http://www.glfw.org) is is licensed under the [zlib/libpng](http://www.glfw.org/license.html) license.
+
 ## Code of Conduct
 
-Everyone interacting in the GLFW project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/glfw/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the GLFW project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/ForeverZer0/glfw/blob/master/CODE_OF_CONDUCT.md).

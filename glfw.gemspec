@@ -9,13 +9,11 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Eric Freed"]
   spec.email         = ["efreed09@gmail.com"]
 
-  spec.summary       = %q{Currently under construction.}
-  spec.description   = %q{Currently under construction, do not use.}
+  spec.summary       = %q{GLFW is an Open Source, multi-platform library for OpenGL, OpenGL ES and Vulkan development on the desktop. It provides a simple API for creating windows, contexts and surfaces, receiving input and events.}
+  spec.description   = %q{This is a Ruby C-extension that for the excellent GLFW library. Unlike other bindings, this gem goes beyond just providing a 1:1 wrapper of the functions, and has been organized to be used in a more object-oriented, Ruby way. Being statically linked with the included object file during compilation alleviates any headaches with regards to versioning or dependencies, as none are required for this gem}
   spec.homepage      = "https://github.com/ForeverZer0/glfw"
   spec.license       = "MIT"
 
-  # Specify which files should be added to the gem when it is released.
-  # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
   spec.files         = Dir.chdir(File.expand_path('..', __FILE__)) do
     `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   end

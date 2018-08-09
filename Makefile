@@ -122,8 +122,8 @@ TOUCH = exit >
 #### End of system configuration section. ####
 
 preload = 
-libpath = . $(libdir) C:/Ruby24/lib c:/Users/Eric/OneDrive/Documents/RubymineProjects/glfw/ext/glfw/lib
-LIBPATH =  -L. -L$(libdir) -LC:/Ruby24/lib -Lc:/Users/Eric/OneDrive/Documents/RubymineProjects/glfw/ext/glfw/lib
+libpath = . $(libdir) C:/Ruby24/lib c:/Users/Eric/OneDrive/Documents/RubymineProjects/glfw/ext/glfw/ming32
+LIBPATH =  -L. -L$(libdir) -LC:/Ruby24/lib -Lc:/Users/Eric/OneDrive/Documents/RubymineProjects/glfw/ext/glfw/ming32
 DEFFILE = $(TARGET)-$(arch).def
 
 CLEANFILES = mkmf.log $(DEFFILE)
@@ -133,7 +133,7 @@ DISTCLEANDIRS =
 extout = 
 extout_prefix = 
 target_prefix = /glfw
-LOCAL_LIBS = -lglfw3 -lgdi32 -lopengl32 
+LOCAL_LIBS = -lglfw3 -lgdi32 -lopengl32
 LIBS = $(LIBRUBYARG_SHARED)  -lgmp -lshell32 -lws2_32 -liphlpapi -limagehlp -lshlwapi  
 ORIG_SRCS = cursor.c glfw.c image.c monitor.c video_mode.c vulkan.c window.c
 SRCS = $(ORIG_SRCS) 

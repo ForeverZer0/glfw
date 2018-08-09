@@ -1,24 +1,21 @@
 require "mkmf"
 
-LIBDIR     = RbConfig::CONFIG['libdir']
-INCLUDEDIR = RbConfig::CONFIG['includedir']
 
-HEADER_DIRS = [INCLUDEDIR, File.dirname(__FILE__)]
+headers = [RbConfig::CONFIG['includedir'], File.dirname(__FILE__)]
+libdirs = [RbConfig::CONFIG['libdir']]
 
-# TODO: x86 or x86-64 (ming)
+dir = 0.size == 4 ? 'ming32' : 'ming64'
+libdirs << File.expand_path(File.join(File.dirname(__FILE__), dir))
 
-
-# setup constant that is equal to that of the file path that holds that static libraries that will need to be compiled against
-LIB_DIRS = [LIBDIR, File.expand_path(File.join(File.dirname(__FILE__), "lib"))]
-
-# array of all libraries that the C extension should be compiled against
-libs = ['-lglfw3 -lgdi32 -lopengl32']
-
-dir_config('glfw', HEADER_DIRS, LIB_DIRS)
-
-# iterate though the libs array, and append them to the $LOCAL_LIBS array used for the makefile creation
-libs.each do |lib|
-  $LOCAL_LIBS << "#{lib} "
+case RbConfig::CONFIG['host_os']
+when /mingw/
+  $LOCAL_LIBS << '-lglfw3 -lgdi32 -lopengl32'
+when /darwin/
+  $LOCAL_LIBS << '-lglfw3'
+when /linux/
+  $LOCAL_LIBS << '-lglfw3'
 end
+
+dir_config('glfw', headers, libdirs)
 
 create_makefile("glfw/glfw")

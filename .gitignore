@@ -12,7 +12,6 @@ MakeFile
 *.bundle
 *.so
 *.o
-*.a
 mkmf.log
 /.idea/
 /.vscode/

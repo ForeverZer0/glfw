@@ -1,3 +1,3 @@
 module GLFW
-  VERSION = "0.9.8"
+  VERSION = "1.0.2"
 end

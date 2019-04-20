@@ -1,10 +1,13 @@
 # ![icon](./glfw-icon.png) GLFW
 
-This is a Ruby C-extension that for the excellent [GLFW](https://github.com/glfw/glfw) library. Unlike other bindings, this gem goes beyond just providing a 1:1 wrapper of the functions, and has been organized to be used in a more object-oriented, Ruby way. Being statically linked with the included object file during compilation alleviates any headaches with regards to versioning or dependencies, as none are required for this gem.
+This is a Ruby C-extension that for the excellent [GLFW](https://github.com/glfw/glfw) library. Unlike other bindings, this gem goes beyond just providing a 1:1 wrapper of the functions, and has been organized to be used in a more object-oriented, Ruby way.
 
 ## Installation
 
-One of the other advantages this gem offers is that it does not require external dependencies, not even the GLFW3 API. Instead of linking to an extisting library, the gem includes the headers and `glfw3.a` static library to compile against during installation. This offers a much easier, more consistent installation process, without the end-user required to ensure any pre-existing files are properly installed, or concern over versions. As the API the gem is based quite stable and mature, new realeases are uncommon, though this gem will update as they become available to provide the latest version.
+For Windows user, you can download the pre-built binaries at [here](https://www.glfw.org/download.html) for your target architecture, or both. Place these within the their respective folders withing the `ext/glfw/` directory.
+
+For Unix users, simply have GLFW installed globally, and it will be found and linked against during the build process.
+
 
 ### From [RubyGems.org](https://rubygems.org/gems/glfw)
 

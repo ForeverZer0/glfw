@@ -1,25 +1,14 @@
 require_relative "glfw/version"
 require_relative "glfw/glfw"
 
-module GLFW
+# GLFW::Window.new(800, 600, "Hello World!") do |window|
 
-  require "mkmf"
+#   window.make_current
 
-  os = RbConfig::CONFIG['host_os']
+#   until window.closing?
+#     GLFW.poll_events
+#     window.swap_buffers
+#   end
+# end
 
-  puts os
-
-  Window.new(800, 600, "Foobar") do |window|
-
-    window.make_current
-
-    until window.closing?
-      GLFW.poll_events
-      window.swap_buffers
-
-    end
-  end
-
-    terminate
-end
-
+# GLFW.terminate

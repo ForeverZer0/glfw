@@ -41,7 +41,7 @@ void Init_glfw(void) {
 
     // API Version 
     rb_define_const(rb_mGLFW, "API_VERSION", rb_sprintf("%d.%d.%d", 
-         INT2NUM(GLFW_VERSION_MAJOR),  INT2NUM(GLFW_VERSION_MINOR),  INT2NUM(GLFW_VERSION_REVISION)));
+         GLFW_VERSION_MAJOR,  GLFW_VERSION_MINOR,  GLFW_VERSION_REVISION));
     rb_define_const(rb_mGLFW, "API_VERSION_MAJOR", INT2NUM(GLFW_VERSION_MAJOR));
     rb_define_const(rb_mGLFW, "API_VERSION_MINOR", INT2NUM(GLFW_VERSION_MINOR));
     rb_define_const(rb_mGLFW, "API_VERSION_REVISION", INT2NUM(GLFW_VERSION_REVISION));
@@ -273,7 +273,7 @@ void Init_glfw(void) {
 }
 
 void rb_glfw_error_callback(int error, const char *message) {
-    rb_raise(rb_eGLFWError, message);
+    rb_raise(rb_eGLFWError, "%s", message);
 } 
 
 void rb_glfw_monitor_callback(GLFWmonitor *monitor, int connected) {

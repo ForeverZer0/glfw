@@ -11,9 +11,9 @@ case RbConfig::CONFIG['host_os']
 when /mingw/
   $LOCAL_LIBS << '-lglfw3 -lgdi32 -lopengl32'
 when /darwin/
-  $LOCAL_LIBS << '-lglfw3'
+  find_library("glfw", "glfwInit")
 when /linux/
-  $LOCAL_LIBS << '-lglfw3'
+  find_library("glfw", "glfwInit")
 end
 
 dir_config('glfw', headers, libdirs)

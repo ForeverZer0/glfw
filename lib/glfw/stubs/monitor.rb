@@ -33,7 +33,7 @@ module GLFW
 
     ##
     # Generates an appropriately sized gamma ramp from the specified exponent and
-    # then sets the {gamme_ramp} with it. The value must be a finite number greater
+    # then sets the {gamma_ramp} with it. The value must be a finite number greater
     # than zero.
     #
     # The software controlled gamma ramp is applied in addition to the hardware gamma

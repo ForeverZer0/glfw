@@ -60,18 +60,33 @@ All constants for creation hints are prefixed with `HINT`.
 
 GLFW offers a high-level of control of the application window, including callbacks for nearly every relevant system event that effects the window (see documentation for what all callbacks are available). Callbacks are implemented by using Ruby blocks to create a closure that will be invoked the callback fires. 
 
-To enable a callback:
+All callbacks in the libaray follow the same idioms:
 
 ```ruby
-window.on_resize do |width, height|
-  # Process width/height changes
-  p [width, height]
+window.on_framebuffer_resize do |width, height|
+  # Block will be called when framebuffer size changes (change projection matrix, viewport, etc.)
 end
+
+window.on_key do |key, scancode, action, mods|
+  # Block called when keyboard input changes (process keystroke)
+end
+
+# Use method without block to unsubscribe from callback
+window.on_key
 ```
+
+#### Breaking Changes
+
+Prior versions of the gem used a method of enabling all callbacks via a single method, which would then invoke a
+pre-defined method that had to be overridden/aliased. Starting with version 3.3.2, this functiionality has been
+removed in favor of using Ruby blocks, which is more familiar and Ruby-like, as well as being more flexible.
 
 ## Documentation
 
-The GLFW API offers a very in-depth and detailed [documentation](http://www.glfw.org/docs/latest/intro_guide.html) that may be used as a subsitute until complete, and as a fantastic stand-alone source of information to understanding the library.
+The gem documention can be found [here](), it covers at least minimal coverage of the entire API surface.
+
+For more in depth explanation of some features, the native GLFW library offers a very in-depth and detailed [documentation](http://www.glfw.org/docs/latest/intro_guide.html) that may be used as to augment it, or even as a stand-alone source of information to understanding the library. While not all features will match up
+with a 1:1 ratio, the naming conventions and idioms are the same and self-explanatory to use the C documentation for the Ruby gem.
 
 ## Contributing
 

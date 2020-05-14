@@ -86,7 +86,7 @@ module GLFW
     end
 
     ##
-    # Posts an empty event from the current thread to the event queue, causing {Wait_vents} or {events_timeout} to return.
+    # Posts an empty event from the current thread to the event queue, causing {wait_vents} or {events_timeout} to return.
     # @return [void]
     def post_empty_event
     end
@@ -94,6 +94,8 @@ module GLFW
     ##
     # Puts the calling thread to sleep until at least one event is available in the event queue, or until the specified
     # timeout is reached. If one or more events are available, it behaves exactly like {poll_events}.
+    #
+    # @param timeout [Float] The maximum amount of time, in seconds, to wait.
     # @return [void]
     def event_timeout(timeout)
     end
@@ -169,6 +171,26 @@ module GLFW
     attr_accessor :time
   end
 
+  ##
+  # Describes a 2-component floating point vector.
+  class Vec2
+    
+    ##
+    # @return [Float] the position on the x-axis.
+    attr_accessor :x
+
+    ##
+    # @return [Float] the position on the y-axis.
+    attr_accessor :y
+
+    ##
+    # Creates a new instance of the {Vec2} class.
+    # @param x [Float] The position on the x-axis.
+    # @param y [Float] The position on the y-axis.
+    def initialize(x, y)
+    end
+
+  end
 
   ##
   # Descibes the location of an object in 2D space.

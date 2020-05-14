@@ -22,7 +22,9 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>= 2.0.0'
   spec.requirements << 'libglfw, v.3.3'
   spec.metadata['msys2_mingw_dependencies'] = 'glfw'
+  spec.rdoc_options << '--exclude' << 'ext/*'
 
+  spec.add_development_dependency 'yard', '~> 0.9'
   spec.add_development_dependency 'rake', '~> 13.0'
   spec.add_development_dependency 'rake-compiler', '~> 1.1'
 end

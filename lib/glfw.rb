@@ -3,32 +3,32 @@ require_relative 'glfw/stubs'
 require_relative 'glfw/constants'
 require_relative 'glfw/glfw'
 
-# module GLFW
+module GLFW
 
 
-#   GLFW.init
+  GLFW.init
 
-#   GL_CLEAR_BUFFER_BIT = 0x4000
-#   include Fiddle
+  GL_CLEAR_BUFFER_BIT = 0x4000
+  include Fiddle
 
-#   Window.new(800, 600, "GLFW") do |window|
+  Window.new(800, 600, "GLFW") do |window|
 
-#     window.make_current
+    window.make_current
 
 
-#     glClear = GLFW.import('glClear', [-TYPE_INT], TYPE_VOID)
-#     glClearColor = GLFW.import('glClearColor', [TYPE_FLOAT, TYPE_FLOAT, TYPE_FLOAT, TYPE_FLOAT], TYPE_VOID)
+    glClear = GLFW.import('glClear', [-TYPE_INT], TYPE_VOID)
+    glClearColor = GLFW.import('glClearColor', [TYPE_FLOAT, TYPE_FLOAT, TYPE_FLOAT, TYPE_FLOAT], TYPE_VOID)
 
-#     glClearColor.call(0.2, 0.3, 0.4, 1.0)
+    glClearColor.call(0.2, 0.3, 0.4, 1.0)
 
-#     until window.closing?
+    until window.closing?
   
-#       glClear.call(GL_CLEAR_BUFFER_BIT)
-#       window.swap_buffers
-#       GLFW.poll_events
-#     end
+      glClear.call(GL_CLEAR_BUFFER_BIT)
+      window.swap_buffers
+      GLFW.poll_events
+    end
 
-#   end
+  end
 
-#   GLFW.terminate
-# end
+  GLFW.terminate
+end

@@ -11,13 +11,13 @@ NULLCMD = :
 
 #### Start of system configuration section. ####
 
-srcdir = /c/Users/Eric/OneDrive/Documents/RubymineProjects/glfw/ext/glfw
-topdir = /C/Ruby24/include/ruby-2.4.0
+srcdir = /home/eric/Desktop/glfw/ext/glfw
+topdir = /usr/include/ruby-2.7.0
 hdrdir = $(topdir)
-arch_hdrdir = C:/Ruby24/include/ruby-2.4.0/i386-mingw32
+arch_hdrdir = /usr/include/ruby-2.7.0/x86_64-linux
 PATH_SEPARATOR = :
 VPATH = $(srcdir):$(arch_hdrdir)/ruby:$(hdrdir)/ruby
-prefix = $(DESTDIR)/C/Ruby24
+prefix = $(DESTDIR)/usr
 rubysitearchprefix = $(rubylibprefix)/$(sitearch)
 rubyarchprefix = $(rubylibprefix)/$(arch)
 rubylibprefix = $(libdir)/$(RUBY_BASE_NAME)
@@ -52,23 +52,25 @@ infodir = $(datarootdir)/info
 docdir = $(datarootdir)/doc/$(PACKAGE)
 oldincludedir = $(DESTDIR)/usr/include
 includedir = $(prefix)/include
-localstatedir = $(prefix)/var
-sharedstatedir = $(prefix)/com
-sysconfdir = $(prefix)/etc
+runstatedir = $(localstatedir)/run
+localstatedir = $(DESTDIR)/var
+sharedstatedir = $(DESTDIR)/var/lib
+sysconfdir = $(DESTDIR)/etc
 datadir = $(datarootdir)
 datarootdir = $(prefix)/share
-libexecdir = $(exec_prefix)/libexec
+libexecdir = $(DESTDIR)/usr/lib/ruby
 sbindir = $(exec_prefix)/sbin
 bindir = $(exec_prefix)/bin
 archdir = $(rubyarchdir)
 
 
-CC = i686-w64-mingw32-gcc
-CXX = i686-w64-mingw32-g++
-LIBRUBY = lib$(RUBY_SO_NAME).dll.a
+CC_WRAPPER = 
+CC = gcc
+CXX = g++
+LIBRUBY = $(LIBRUBY_SO)
 LIBRUBY_A = lib$(RUBY_SO_NAME)-static.a
 LIBRUBYARG_SHARED = -l$(RUBY_SO_NAME)
-LIBRUBYARG_STATIC = -l$(RUBY_SO_NAME)-static
+LIBRUBYARG_STATIC = -l$(RUBY_SO_NAME)-static $(MAINLIBS)
 empty =
 OUTFLAG = -o $(empty)
 COUTFLAG = -o $(empty)
@@ -76,35 +78,36 @@ CSRCFLAG = $(empty)
 
 RUBY_EXTCONF_H = 
 cflags   = $(optflags) $(debugflags) $(warnflags)
-cxxflags = $(optflags) $(debugflags) $(warnflags)
-optflags = -O3 -fno-omit-frame-pointer -fno-fast-math
+cxxflags = 
+optflags = -O3
 debugflags = -ggdb3
-warnflags = -Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wno-tautological-compare -Wno-parentheses-equality -Wno-constant-logical-operand -Wno-self-assign -Wunused-variable -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration -Wdeprecated-declarations -Wno-packed-bitfield-compat -Wsuggest-attribute=noreturn -Wsuggest-attribute=format -Wimplicit-fallthrough=0
-CCDLFLAGS = 
-CFLAGS   = $(CCDLFLAGS) -march=i686 -mtune=generic -O2 -pipe $(ARCH_FLAG)
+warnflags = -Wall -Wextra -Wdeprecated-declarations -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wwrite-strings -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable
+cppflags = 
+CCDLFLAGS = -fPIC
+CFLAGS   = $(CCDLFLAGS) -march=x86-64 -mtune=generic -O2 -pipe -fno-plt -fPIC $(ARCH_FLAG)
 INCFLAGS = -I. -I$(arch_hdrdir) -I$(hdrdir)/ruby/backward -I$(hdrdir) -I$(srcdir)
-DEFS     = -D_FILE_OFFSET_BITS=64
-CPPFLAGS =  -IC:/Ruby24/include -Ic:/Users/Eric/OneDrive/Documents/RubymineProjects/glfw/ext/glfw -D_FORTIFY_SOURCE=2 -D__USE_MINGW_ANSI_STDIO=1 -DFD_SETSIZE=2048 -D_WIN32_WINNT=0x0501 -D__MINGW_USE_VC2005_COMPAT $(DEFS) $(cppflags)
-CXXFLAGS = $(CCDLFLAGS) -march=i686 -mtune=generic -O2 -pipe $(ARCH_FLAG)
-ldflags  = -L. -pipe
-dldflags = -pipe -Wl,--enable-auto-image-base,--enable-auto-import $(DEFFILE) 
+DEFS     = 
+CPPFLAGS =  -D_FORTIFY_SOURCE=2 $(DEFS) $(cppflags)
+CXXFLAGS = $(CCDLFLAGS) -march=x86-64 -mtune=generic -O2 -pipe -fno-plt $(ARCH_FLAG)
+ldflags  = -L. -Wl,-O1,--sort-common,--as-needed,-z,relro,-z,now -fstack-protector-strong -rdynamic -Wl,-export-dynamic
+dldflags = -Wl,-O1,--sort-common,--as-needed,-z,relro,-z,now -Wl,--compress-debug-sections=zlib 
 ARCH_FLAG = 
 DLDFLAGS = $(ldflags) $(dldflags) $(ARCH_FLAG)
-LDSHARED = $(CC) -shared $(if $(filter-out -g -g0,$(debugflags)),,-s)
-LDSHAREDXX = $(CXX) -shared $(if $(filter-out -g -g0,$(debugflags)),,-s)
+LDSHARED = $(CC) -shared
+LDSHAREDXX = $(CXX) -shared
 AR = ar
-EXEEXT = .exe
+EXEEXT = 
 
 RUBY_INSTALL_NAME = $(RUBY_BASE_NAME)
-RUBY_SO_NAME = msvcrt-ruby240
-RUBYW_INSTALL_NAME = $(RUBYW_BASE_NAME)
+RUBY_SO_NAME = ruby
+RUBYW_INSTALL_NAME = 
 RUBY_VERSION_NAME = $(RUBY_BASE_NAME)-$(ruby_version)
 RUBYW_BASE_NAME = rubyw
 RUBY_BASE_NAME = ruby
 
-arch = i386-mingw32
-sitearch = i386-msvcrt
-ruby_version = 2.4.0
+arch = x86_64-linux
+sitearch = $(arch)
+ruby_version = 2.7.0
 ruby = $(bindir)/$(RUBY_BASE_NAME)
 RUBY = $(ruby)
 ruby_headers = $(hdrdir)/ruby.h $(hdrdir)/ruby/backward.h $(hdrdir)/ruby/ruby.h $(hdrdir)/ruby/defines.h $(hdrdir)/ruby/missing.h $(hdrdir)/ruby/intern.h $(hdrdir)/ruby/st.h $(hdrdir)/ruby/subst.h $(arch_hdrdir)/ruby/config.h
@@ -122,23 +125,23 @@ TOUCH = exit >
 #### End of system configuration section. ####
 
 preload = 
-libpath = . $(libdir) C:/Ruby24/lib c:/Users/Eric/OneDrive/Documents/RubymineProjects/glfw/ext/glfw/ming32
-LIBPATH =  -L. -L$(libdir) -LC:/Ruby24/lib -Lc:/Users/Eric/OneDrive/Documents/RubymineProjects/glfw/ext/glfw/ming32
-DEFFILE = $(TARGET)-$(arch).def
+libpath = . $(libdir)
+LIBPATH =  -L. -L$(libdir)
+DEFFILE = 
 
-CLEANFILES = mkmf.log $(DEFFILE)
+CLEANFILES = mkmf.log
 DISTCLEANFILES = 
 DISTCLEANDIRS = 
 
 extout = 
 extout_prefix = 
 target_prefix = /glfw
-LOCAL_LIBS = -lglfw3 -lgdi32 -lopengl32
-LIBS = $(LIBRUBYARG_SHARED)  -lgmp -lshell32 -lws2_32 -liphlpapi -limagehlp -lshlwapi  
-ORIG_SRCS = cursor.c glfw.c image.c monitor.c video_mode.c vulkan.c window.c
+LOCAL_LIBS = 
+LIBS = $(LIBRUBYARG_SHARED) -lglfw  -lm   -lc
+ORIG_SRCS = common.c cursor.c glfw.c image.c joystick.c monitor.c window.c
 SRCS = $(ORIG_SRCS) 
-OBJS = cursor.o glfw.o image.o monitor.o video_mode.o vulkan.o window.o
-HDRS = $(srcdir)/common.h $(srcdir)/cursor.h $(srcdir)/glfw.h $(srcdir)/glfw3.h $(srcdir)/glfw3native.h $(srcdir)/image.h $(srcdir)/monitor.h $(srcdir)/video_mode.h $(srcdir)/vulkan.h $(srcdir)/window.h
+OBJS = common.o cursor.o glfw.o image.o joystick.o monitor.o window.o
+HDRS = $(srcdir)/stb_image.h $(srcdir)/glfw.h
 LOCAL_HDRS = 
 TARGET = glfw
 TARGET_NAME = glfw
@@ -253,15 +256,11 @@ site-install-rb: install-rb
 	$(ECHO) translating $(<)
 	$(Q) $(CC) $(INCFLAGS) $(CPPFLAGS) $(CFLAGS) $(COUTFLAG)$@ -S $(CSRCFLAG)$<
 
-$(TARGET_SO): $(DEFFILE) $(OBJS) Makefile
+$(TARGET_SO): $(OBJS) Makefile
 	$(ECHO) linking shared-object glfw/$(DLLIB)
 	-$(Q)$(RM) $(@)
 	$(Q) $(LDSHARED) -o $@ $(OBJS) $(LIBPATH) $(DLDFLAGS) $(LOCAL_LIBS) $(LIBS)
 
 
-
-$(DEFFILE): 
-	$(ECHO) generating $(@)
-	$(Q) (echo EXPORTS && echo $(TARGET_ENTRY)) > $@
 
 $(OBJS): $(HDRS) $(ruby_headers)

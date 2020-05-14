@@ -18,10 +18,14 @@ module GLFW
 
     ##
     # @overload initialize(width, height, pixels = nil)
-    #
+    #   Creates a new image of the specified size.
+    #   @param width [Integer] The width of the image, in pixel units.
+    #   @param height [Integer] The height of the image, in pixel units.
+    #   @param pixels [String?] A string buffer containing the uncompressed pixel data.
     # @overload initialize(filename)
-    #
-    def initialize(width, height, pixels)
+    #   Creates a new image from the specified file.
+    #   @param filename [String] The path to an image file to load.
+    def initialize(*args)
     end
 
     ##

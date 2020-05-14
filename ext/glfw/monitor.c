@@ -116,7 +116,7 @@ static VALUE rb_glfw_monitor_set_gamma_ramp(VALUE self, VALUE gamma)
 static VALUE rb_glfw_monitor_gamma(VALUE self, VALUE gamma)
 {
     glfwSetGamma(DATA_PTR(self), NUM2FLT(gamma));
-    return gamma;
+    return Qnil;
 }
 
 static VALUE rb_glfw_monitor_content_scale(VALUE self)

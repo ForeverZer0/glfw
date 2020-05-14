@@ -1,0 +1,6 @@
+--readme README.md
+--title 'GLFW'
+--charset utf-8
+--markup markdown
+--protected
+lib/**/*.rb

@@ -1,41 +1,48 @@
-#ifndef GLFW_RB_H
-#define GLFW_RB_H 1
+#ifndef RB_GLFW_H
+#define RB_GLFW_H 1
 
-#include "common.h"
-#include "window.h"
-#include "monitor.h"
-#include "image.h"
-#include "cursor.h"
-#include "video_mode.h"
-#include "vulkan.h"
+#include "ruby.h"
+#include "GLFW/glfw3.h"
 
-void rb_glfw_error_callback(int error, const char *message);
-void rb_glfw_monitor_callback(GLFWmonitor *monitor, int connected);
-void rb_glfw_joystick_callback(int joystick, int connected);
+#define GLFW_IMAGE_LOADER 1
 
-VALUE rb_glfw_init(VALUE klass);
-VALUE rb_glfw_terminate(VALUE klass);
-VALUE rb_glfw_poll_events(VALUE klass);
-VALUE rb_glfw_wait_events(VALUE klass);
-VALUE rb_glfw_get_time(VALUE klass);
-VALUE rb_glfw_set_time(VALUE klass, VALUE t);
-VALUE rb_glfw_swap_interval(VALUE klass, VALUE interval);
-VALUE rb_glfe_event_timeout(VALUE klass, VALUE timeout);
-VALUE rb_glfw_current_context(VALUE klass);
-VALUE rb_glfw_supported_p(VALUE klass, volatile VALUE extension);
-VALUE rb_glfw_monitors(VALUE klass);
-VALUE rb_glfw_load_default_hints(VALUE klass);
-VALUE rb_glfw_window_hint(VALUE klass, VALUE hint, VALUE value);
-VALUE rb_glfw_key_name(VALUE klass, VALUE key, VALUE scancode);
-VALUE rb_glfw_post_empty(VALUE klass);
-VALUE rb_glfw_timer_frequency(VALUE klass);
-VALUE rb_glfw_timer_value(VALUE klass);
-VALUE rb_glfw_joystick_p(VALUE klass, VALUE joystick);
-VALUE rb_glfw_joystick_name(VALUE klass, VALUE joystick);
-VALUE rb_glfw_joystick_axes(VALUE klass, VALUE joystick);
-VALUE rb_glfw_joystick_buttons(VALUE klass, VALUE joystick);
-VALUE rb_glfw_monitor_changed(VALUE klass, VALUE monitor, VALUE connected);
-VALUE rb_glfw_joystick_changed(VALUE klass, VALUE joystick, VALUE connected);
-VALUE rb_glfw_proc_address(VALUE klass, VALUE name);
+extern VALUE mGLFW;
+extern VALUE eGLFWError;
+extern VALUE cWindow;
+extern VALUE cMonitor;
+extern VALUE cImage;
+extern VALUE cCursor;
+extern VALUE cVideoMode;
+extern VALUE mJoystick;
+extern VALUE cGamepadState;
+extern VALUE cPoint;
+extern VALUE cSize;
+extern VALUE cVector2;
 
-#endif /* GLFW_RB_H */
+extern VALUE rb_cPointer;
+
+#define RB_BOOL(exp) ((exp) ? Qtrue : Qfalse)
+#define NUM2FLT(v) ((float) NUM2DBL(v))
+#define STR2SYM(str) (ID2SYM(rb_intern(str)))
+
+void rb_glfw_window_init(void);
+void rb_glfw_monitor_init(void);
+void rb_glfw_image_init(void);
+void rb_glfw_cursor_init(void);
+void rb_glfw_common_init(void);
+void rb_glfw_joystick_init(void);
+
+typedef struct {
+    int x;
+    int y;
+} RBivec2;
+
+typedef struct {
+    double x;
+    double y;
+} RBvec2;
+
+VALUE rb_glfw_ivec2_create(VALUE klass, int x, int y);
+VALUE rb_glfw_vec2_create(VALUE klass, double x, double y);
+
+#endif /* RB_GLFW_H */

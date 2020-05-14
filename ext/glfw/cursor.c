@@ -1,42 +1,46 @@
 
-#include "cursor.h"
+#include "glfw.h"
 
-VALUE rb_cGLFWcursor;
+VALUE cCursor;
 
-void Init_glfw_cursor(VALUE module) {
-    rb_cGLFWcursor = rb_define_class_under(module, "Cursor", rb_cObject);
-    rb_define_alloc_func(rb_cGLFWcursor, rb_glfw_cursor_alloc);
-    
-    rb_define_method(rb_cGLFWcursor, "initialize", rb_glfw_cursor_initialize, 3);
-    rb_define_method(rb_cGLFWcursor, "destroy", rb_glfw_cursor_destroy, 0);
-
-    rb_define_alias(rb_cGLFWcursor, "dispose", "destroy");
-
-    rb_define_singleton_method(rb_cGLFWcursor, "create", rb_glfw_cursor_standard, 1);
+static void rb_glfw_cursor_free(void *cursor)
+{
+    if (cursor)
+        glfwDestroyCursor(cursor);
 }
 
-static VALUE rb_glfw_cursor_alloc(VALUE klass) {
-    GLFWcursor *c = ruby_xmalloc(SIZEOF_INTPTR_T);
-    memset(c, 0, SIZEOF_INTPTR_T);
-    return Data_Wrap_Struct(klass, NULL, RUBY_DEFAULT_FREE, c);
+static VALUE rb_glfw_cursor_alloc(VALUE klass)
+{
+    return Data_Wrap_Struct(klass, NULL, rb_glfw_cursor_free, NULL);
 }
 
-VALUE rb_glfw_cursor_initialize(VALUE self, VALUE image, VALUE xhot, VALUE yhot) {
-    GLFWimage *img;
-    Data_Get_Struct(image, GLFWimage, img);
-    RDATA(self)->data = glfwCreateCursor(img, NUM2INT(xhot), NUM2INT(yhot));
-    return Qnil;
-}
+static VALUE rb_glfw_cursor_initialize(int argc, VALUE *argv, VALUE self)
+{
+    VALUE img, x, y;
+    rb_scan_args(argc, argv, "12", &img, &x, &y);
 
-VALUE rb_glfw_cursor_standard(VALUE klass, VALUE shape) {
-    GLFWcursor *cursor = glfwCreateStandardCursor(NUM2INT(shape));
-    return Data_Wrap_Struct(klass, NULL, RUBY_DEFAULT_FREE, cursor);
-}
-
-VALUE rb_glfw_cursor_destroy(VALUE self) {
     GLFWcursor *cursor;
-    Data_Get_Struct(self, GLFWcursor, cursor);
 
-    glfwDestroyCursor(cursor);
+    if (RB_TYPE_P(img, T_DATA))
+    {
+        GLFWimage *image = DATA_PTR(img);
+        int xhot = RTEST(x) ? NUM2INT(x) : 0;
+        int yhot = RTEST(y) ? NUM2INT(y) : 0;
+        cursor = glfwCreateCursor(image, xhot, yhot);
+    }
+    else
+    {
+        int shape = NUM2INT(img);
+        cursor = glfwCreateStandardCursor(shape);
+    }
+
+    RDATA(self)->data = cursor;
     return Qnil;
+}
+
+void rb_glfw_cursor_init(void) {
+    cCursor = rb_define_class_under(mGLFW, "Cursor", rb_cObject);
+
+    rb_define_method(cCursor, "initialize", rb_glfw_cursor_initialize, -1);
+    rb_define_alloc_func(cCursor, rb_glfw_cursor_alloc);
 }

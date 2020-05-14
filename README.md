@@ -20,6 +20,16 @@ Open a terminal/command prompt in the base directory:
     $ gem build glfw.gemspec
     $ gem install glfw-[VERSION].gem
 
+## Features
+
+* Implemented in C for higher performance than FFI-based bindings can achieve, very desirable for game/graphics applications
+* Covers the entire GLFW API (exception of creating a Vulkan surface, possible support in future if in-demand)
+* Built-in image-loader supporting most common image formats (can also be used for OpenGL texture loading)
+* Intuitive API, implemented using common Ruby idioms, while also staying true to the base API
+* Convenience methods for importing and returning OpenGL functions as `Fiddle::Function` instances
+* Stubs and documentation for all C functions so that linters can detect signatures and offer code completion, inline documentation, etc.
+* Painless cross-platform support, uses natively installed libraries on Unix-like systems, and automatically retrieves native dependencies using MSYS on Windows (meaning it "just works" and you need no special deployment process or dependency handling for Windows systems)
+
 ## Usage
 
 ### Window Creation
@@ -83,14 +93,18 @@ removed in favor of using Ruby blocks, which is more familiar and Ruby-like, as 
 
 ## Documentation
 
-The gem documention can be found [here](), it covers at least minimal coverage of the entire API surface.
+The gem documention can be found [here](https://www.rubydoc.info/gems/glfw/3.3.2.0), providing coverage of the entire API surface.
 
-For more in depth explanation of some features, the native GLFW library offers a very in-depth and detailed [documentation](http://www.glfw.org/docs/latest/intro_guide.html) that may be used as to augment it, or even as a stand-alone source of information to understanding the library. While not all features will match up
+For more in depth explanation of some features, the native GLFW library offers a very in-depth and detailed [documentation](http://www.glfw.org/docs/latest/intro_guide.html) that may be used to augment it, or even as a stand-alone source of information to understanding the library. While not all features will match up
 with a 1:1 ratio, the naming conventions and idioms are the same and self-explanatory to use the C documentation for the Ruby gem.
+
+Feel free to open an [issue](https://github.com/ForeverZer0/glfw/issues) for any additional questions that may not be covered, I would be happy to offer any help that I can.
 
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/ForeverZer0/glfw. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+
+Pull requests are always welcome.
 
 ## License
 

@@ -5,19 +5,9 @@ require_relative 'stubs/gamepad_state'
 require_relative 'stubs/cursor'
 require_relative 'stubs/joystick'
 require_relative 'stubs/monitor'
+require_relative 'stubs/video_mode'
 
 module GLFW
-
-
-
-  class VideoMode
-    attr_reader :width
-    attr_reader :height
-    attr_reader :red_bits
-    attr_reader :green_bits
-    attr_reader :blue_bits
-    attr_reader :refresh_rate
-  end
 
   class << self
 

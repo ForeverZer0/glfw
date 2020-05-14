@@ -2,6 +2,7 @@
 module GLFW
 
   class Cursor
+    
     ##
     # Standard "arror" cursor shape.
     SHAPE_ARROW           = 0x00036001

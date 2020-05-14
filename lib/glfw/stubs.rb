@@ -8,10 +8,41 @@ require_relative 'stubs/joystick'
 module GLFW
 
 
+
   class Monitor
+
+    def self.available
+    end
+
+    def self.primary
+    end
+
+    def self.on_connection
+    end
+
+    def gamma(value)
+    end
+
+    attr_accessor :gamma_ramp
+
+    attr_reader :name
+    attr_reader :client_position
+    attr_reader :physical_size
+    attr_reader :size
+    attr_reader :client_position
+    attr_reader :client_size
+    attr_reader :video_mode
+    attr_reader :video_modes
+    attr_reader :content_scale
   end
 
   class VideoMode
+    attr_reader :width
+    attr_reader :height
+    attr_reader :red_bits
+    attr_reader :green_bits
+    attr_reader :blue_bits
+    attr_reader :refresh_rate
   end
 
   class << self

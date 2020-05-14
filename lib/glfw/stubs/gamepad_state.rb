@@ -27,5 +27,4 @@ module GLFW
     def button(index)
     end
   end
-
 end

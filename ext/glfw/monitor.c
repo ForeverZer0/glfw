@@ -123,7 +123,7 @@ static VALUE rb_glfw_monitor_content_scale(VALUE self)
 {
     float x, y;
     glfwGetMonitorContentScale(DATA_PTR(self), &x, &y);
-    return rb_glfw_vec2_create(cVector2, x, y);
+    return rb_glfw_vec2_create(cVec2, x, y);
 }
 
 static VALUE rb_glfw_monitor_video_mode(VALUE self)

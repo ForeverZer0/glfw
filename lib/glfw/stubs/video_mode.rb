@@ -29,5 +29,4 @@ module GLFW
     # @return [Integer] the refresh rate, in Hz, of the video mode.
     attr_reader :refresh_rate
   end
-
 end

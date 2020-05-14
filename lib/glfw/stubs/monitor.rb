@@ -109,7 +109,7 @@ module GLFW
     # settings. It may be very different from the raw DPI calculated from the physical size and
     # current resolution.
     #
-    # @return [Vector2] the current content scale of the monitor.
+    # @return [Vec2] the current content scale of the monitor.
     attr_reader :content_scale
   end
 end

@@ -2,7 +2,7 @@
 
 VALUE cPoint;
 VALUE cSize;
-VALUE cVector2;
+VALUE cVec2;
 
 static VALUE rb_glfw_ivec_alloc(VALUE klass)
 {
@@ -124,7 +124,7 @@ void rb_glfw_common_init(void)
 {
     cPoint = rb_define_class_under(mGLFW, "Point", rb_cObject);
     cSize = rb_define_class_under(mGLFW, "Size", rb_cObject);
-    cVector2 = rb_define_class_under(mGLFW, "Vector2", rb_cObject);
+    cVec2 = rb_define_class_under(mGLFW, "Vec2", rb_cObject);
 
     rb_define_alloc_func(cPoint, rb_glfw_ivec_alloc);
     rb_define_alloc_func(cSize, rb_glfw_ivec_alloc);
@@ -140,10 +140,10 @@ void rb_glfw_common_init(void)
     rb_define_method(cSize, "width=", rb_glfw_ivec_set_x, 1);
     rb_define_method(cSize, "height=", rb_glfw_ivec_set_y, 1);
 
-    rb_define_method(cVector2, "x", rb_glfw_vec_get_x, 0);
-    rb_define_method(cVector2, "y", rb_glfw_vec_get_y, 0);
-    rb_define_method(cVector2, "x=", rb_glfw_vec_set_x, 1);
-    rb_define_method(cVector2, "y=", rb_glfw_vec_set_y, 1);
+    rb_define_method(cVec2, "x", rb_glfw_vec_get_x, 0);
+    rb_define_method(cVec2, "y", rb_glfw_vec_get_y, 0);
+    rb_define_method(cVec2, "x=", rb_glfw_vec_set_x, 1);
+    rb_define_method(cVec2, "y=", rb_glfw_vec_set_y, 1);
 
     rb_define_method(cPoint, "==", rb_glfw_ivec_equal, 1);
     rb_define_method(cPoint, "eql?", rb_glfw_ivec_equal, 1);
@@ -151,9 +151,9 @@ void rb_glfw_common_init(void)
     rb_define_method(cSize, "eql?", rb_glfw_ivec_equal, 1);
     rb_define_method(cPoint, "inspect", rb_glfw_ivec_inspect, 0);
     rb_define_method(cSize, "inspect", rb_glfw_ivec_inspect, 0);
-    rb_define_method(cVector2, "inspect", rb_glfw_vec_inspect, 0);
+    rb_define_method(cVec2, "inspect", rb_glfw_vec_inspect, 0);
 
     rb_define_method(cPoint, "initialize", rb_glfw_ivec_initialize, 2);
     rb_define_method(cSize, "initialize", rb_glfw_ivec_initialize, 2);
-    rb_define_method(cVector2, "initialize", rb_glfw_vec_initialize, 2);
+    rb_define_method(cVec2, "initialize", rb_glfw_vec_initialize, 2);
 }

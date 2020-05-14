@@ -17,9 +17,7 @@ extern VALUE mJoystick;
 extern VALUE cGamepadState;
 extern VALUE cPoint;
 extern VALUE cSize;
-extern VALUE cVector2;
-
-extern VALUE rb_cPointer;
+extern VALUE cVec2;
 
 #define RB_BOOL(exp) ((exp) ? Qtrue : Qfalse)
 #define NUM2FLT(v) ((float) NUM2DBL(v))

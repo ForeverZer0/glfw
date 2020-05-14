@@ -314,7 +314,7 @@ module GLFW
     attr_accessor :cursor
 
     ##
-    # @return [Vector2] the location of the mouse cursor.
+    # @return [Vec2] the location of the mouse cursor.
     attr_accessor :cursor_pos
 
     ##
@@ -372,7 +372,7 @@ module GLFW
     attr_reader :monitor
 
     ##
-    # @return [Vector2] the current content scale of the window.
+    # @return [Vec2] the current content scale of the window.
     attr_reader :content_scale
 
     ##

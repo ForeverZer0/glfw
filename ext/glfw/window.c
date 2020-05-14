@@ -650,14 +650,14 @@ static VALUE rb_glfw_window_content_scale(VALUE self)
 {
     float x, y;
     glfwGetWindowContentScale(DATA_PTR(self), &x, &y);
-    return rb_glfw_vec2_create(cVector2, x, y);
+    return rb_glfw_vec2_create(cVec2, x, y);
 }
 
 static VALUE rb_glfw_window_get_cursor_pos(VALUE self)
 {
     double x, y;
     glfwGetCursorPos(DATA_PTR(self), &x, &y);
-    return rb_glfw_vec2_create(cVector2, x, y);
+    return rb_glfw_vec2_create(cVec2, x, y);
 }
 
 static VALUE rb_glfw_window_set_cursor_pos(VALUE self, VALUE position)

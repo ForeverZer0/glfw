@@ -1,8 +1,5 @@
 require "mkmf"
 
-
-unless find_library('glfw', 'glfwInit')
-  abort 'Unable to locate native GLFW library on system'
-end
+abort('Unable to locate GLFW library') unless find_library('glfw', 'glfwInit')
 
 create_makefile("glfw/glfw")

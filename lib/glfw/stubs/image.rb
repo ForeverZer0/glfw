@@ -3,6 +3,9 @@ module GLFW
 
   ##
   # Object describing a raw image with uncompressed pixel data, with 32-bytes per pixel in RGBA byte order. 
+  #
+  # This class may also be used for creating textures with OpenGL, simply use `GL_RGBA` as the pixel format
+  # and pass the value of the {pixels} method.
   class Image
 
     ##
@@ -23,6 +26,7 @@ module GLFW
 
     ##
     # Gets the pixel data as a binary blob.
+    #
     # @return [String] the pixel data.
     def pixels
     end

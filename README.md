@@ -4,9 +4,9 @@ This is a Ruby C-extension for the excellent [GLFW](https://github.com/glfw/glfw
 
 ## Installation
 
-For Windows users, you can download the pre-built binaries [here](https://www.glfw.org/download.html) for your target architecture, or both. Place these within the their respective folders withing the `ext/glfw/` directory.
+For Windows users, the dependencies will automatically be fetched and installed into Ruby's environment using the built-in functionality of MSYS2. 
 
-For Unix users, simply have GLFW installed globally, and it will be found and linked against during the build process.
+For Unix-like systems, simply have GLFW installed globally, and it will be found and linked against during the build process.
 
 
 ### From [RubyGems.org](https://rubygems.org/gems/glfw)
@@ -44,53 +44,34 @@ You will likely want to fine-tune the created context to what your application r
 GLFW.init
 
 # Load default window hints. This will reset any previous hints given
-GLFW.load_default_hints
+GLFW::Window.default_hints
 
 # Window will be NOT be decorated (title, border, close widget, etc)
-GLFW.hint(GLFW::HINT_DECORATED, false)
+GLFW::Window.hint(GLFW::HINT_DECORATED, false)
 
 # Specify MINIMUM required OpenGL version
-GLFW.hint(GLFW::HINT_CONTEXT_VERSION_MAJOR, 3)
-GLFW.hint(GLFW::HINT_CONTEXT_VERSION_MAJOR, 0)
+GLFW::Window.hint(GLFW::HINT_CONTEXT_VERSION_MAJOR, 3)
+GLFW::Window.hint(GLFW::HINT_CONTEXT_VERSION_MAJOR, 3)
 ```
 
 All constants for creation hints are prefixed with `HINT`.
 
 ### Callbacks
 
-GLFW offers a high-level of control of the application window, including callbacks for nearly every relevant system event that effects the window (see documentation for what all callbacks are available). By default, most of these callbacks are disabled, and need to be enabled with a method call to have them fired. This is for performance reasons, as it is inefficient to have them all being invoked if they are not going to be used.
+GLFW offers a high-level of control of the application window, including callbacks for nearly every relevant system event that effects the window (see documentation for what all callbacks are available). Callbacks are implemented by using Ruby blocks to create a closure that will be invoked the callback fires. 
 
 To enable a callback:
 
 ```ruby
-window.enable_callback(GLFW::CB_RESIZED, true)
-```
-
-You then have two options; to either alias the `GLFW::Window` class for the relevant callback, or more commonly to create your own class that inherits from `GLFW::Window`.
-
-```ruby
-class MyGame < GLFW::Window
-
-  def initialize
-    super(800, 600, "My Awesome Game Title", fullscreen: true)
-    enable_callback(GLFW::CB_RESIZED, true)
-  end
-
-  # This method will be invoked when the window is resized.
-  def resized(width, hight)
-    # Your code goes here.
-    # The "width/height" arguments passed are the new size
-  end
+window.on_resize do |width, height|
+  # Process width/height changes
+  p [width, height]
 end
 ```
 
-All constants for callbacks are prefixed with `CB`.
-
 ## Documentation
 
-The documentation is a work-in-progress.
-
-The GLFW API offers a very in-depth and detailed [documentation](http://www.glfw.org/docs/latest/intro_guide.html) that may be used as a subsitute until complete, and as a fantastic stand-alone source of information to understanding the linrary.
+The GLFW API offers a very in-depth and detailed [documentation](http://www.glfw.org/docs/latest/intro_guide.html) that may be used as a subsitute until complete, and as a fantastic stand-alone source of information to understanding the library.
 
 ## Contributing
 
@@ -100,7 +81,7 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/Foreve
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
 
-The [GLFW API](http://www.glfw.org) is is licensed under the [zlib/libpng](http://www.glfw.org/license.html) license.
+[GLFW](http://www.glfw.org) is is licensed under the [zlib/libpng](http://www.glfw.org/license.html) license.
 
 ## Code of Conduct
 

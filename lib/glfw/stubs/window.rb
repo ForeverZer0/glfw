@@ -17,7 +17,7 @@ module GLFW
     #
     # @param hint [Integer] A value indicating the hint to change. See the GLFW constants prefixed with `HINT`
     #   for valid values for this parameter.
-    # @param value [Integer,Boolean] The desired value to set for this hint.  
+    # @param value [Integer,Boolean,String] The desired value to set for this hint.  
     # 
     # @return [void]
     def self.hint(hint, value)

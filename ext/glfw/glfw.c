@@ -35,7 +35,13 @@ static VALUE rb_glfw_version_str(VALUE glfw)
 
 static VALUE rb_glfw_init(VALUE glfw)
 {
-    return RB_BOOL(glfwInit());
+    VALUE result = RB_BOOL(glfwInit());
+    if (rb_block_given_p())
+    {
+        rb_yield(Qnil);
+        return Qnil;
+    }
+    return result;
 }
 
 static VALUE rb_glfw_terminate(VALUE glfw)
